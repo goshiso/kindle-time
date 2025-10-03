@@ -11,6 +11,11 @@
       font-family: TIME;
       src: url("time.ttf") format("truetype");
     }
+    
+    @font-face {
+      font-family: 'DATE';
+      src: url('date.ttf') format('truetype'); /* 字体文件路径 */
+    }
 
     * {
       margin: 0;
@@ -36,13 +41,21 @@
       font-family: TIME;
       margin: 1rem 0;
       font-family: TIME;
-      font-size: 350px !important;     /* ← 时间字号，改这里，数字越大越大 */
+      font-size: 300px !important;     /* ← 时间字号，改这里，数字越大越大 */
       margin: 1rem 0;
     }
 
     .date {
-      white-space: nowrap;
-      font-size: 50px !important;  /* 日期字号 */
+      width: 150px;            /* 方框宽度 */
+      height: 150px;           /* 方框高度 */
+      border: 3px solid black; /* 黑色边框 */
+      display: flex;
+      justify-content: center; /* 水平居中 */
+      align-items: center;     /* 垂直居中 */
+      font-family: DATE;
+      font-size: 6rem;         /* 字体大小，可调 */
+      text-align: center;
+      box-sizing: border-box;
     }
 
     .cn-date {
