@@ -39,10 +39,9 @@
     .time {
       letter-spacing: -30px;   /* 调整字符之间的距离，负值更紧凑 */
       font-family: TIME;
-      margin: 1rem 0;
-      font-family: TIME;
       font-size: 350px !important;     /* ← 时间字号，改这里，数字越大越大 */
-      margin: 1rem 0;
+      line-height: 1;       /* 缩小行高 */
+      margin: 0;            /* 去掉默认外边距 */
     }
 
     .date {
@@ -50,7 +49,8 @@
       font-family: DATE; 
       font-size: 5rem; /* 字体大小可调整 */
       text-align: left;
-      margin-top: 50px;
+      line-height: 1;       /* 缩小行高 */
+      margin: 0;            /* 去掉默认外边距 */
     }
 
     .cn-date {
