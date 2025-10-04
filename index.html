@@ -144,6 +144,7 @@
     }
     var hh = pad2(date.getHours());  // 小时 00–23
     var mm = pad2(date.getMinutes()); // 分钟 00–59
+    mm = 40
     var timeText = hh + "<br>" + mm;
     var dateText = "".concat(
     date.getMonth() + 1,  // 月份，注意要 +1
@@ -160,6 +161,10 @@
       domTime.style.height = "20px";
       domDateLeft.style.width = "600px";
       domDate.innerHTML = dateText.replace(" ", "<br>")
+    } else if (/^4\d$/.test(mm)) {
+      domTime.style.height = "700px";
+      domDateLeft.style.width = "20px";
+      domDate.innerHTML = dateText.replace(" ", "<br>");
     } else if (hh == "04" || hh == "14") {
       domTime.style.height = "305px";
       domDateLeft.style.width = "420px";
@@ -212,4 +217,3 @@
 
 </body>
 </html>
-
