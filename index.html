@@ -19,6 +19,13 @@
     background: white;
   }
 
+  .app {
+    display: flex;
+    flex-direction: column;  /* 垂直排列 */
+    justify-content: center;
+    align-items: center;
+  }
+  
   .time {
     width: 757px;   /* div固定宽度 */
     height: 906px;  /* div固定高度 */
@@ -36,7 +43,10 @@
 </head>
 <body>
 
-<div class="time">00<br>00</div>
+<div class="app">
+  <div class="time">00<br>00</div>
+  <div class="date">10.4 六</div>
+</div>
 
 <script>
 (function(){
@@ -64,7 +74,7 @@ function render() {
   // 根据 div 高度自动调整字体大小
   function fitText() {
     var divHeight = domTime.clientHeight;
-    domTime.style.fontSize = (divHeight / 2.95) + 'px'; // 两行文字占一半高度
+    domTime.style.fontSize = '307px'; // 两行文字占一半高度
   }
 
   // 初始化
@@ -82,6 +92,7 @@ function render() {
 
 </body>
 </html>
+
 
 
 
