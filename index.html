@@ -37,26 +37,11 @@
 <body>
 <div class="time">00<br>00</div>
 
-<script>
-function fitText() {
-  var domTime = document.querySelector('.time');
-  var divHeight = domTime.clientHeight;
-  domTime.style.fontSize = (divHeight / 3) + 'px'; // 两行文字，每行占一半高度
-}
+<script src="./index.min.js"></script>
 
-fitText();
-window.addEventListener('resize', fitText);
-
-// 模拟时钟刷新
-setInterval(() => {
-  var date = new Date();
-  var hh = date.getHours().toString().padStart(2, '0');
-  var mm = date.getMinutes().toString().padStart(2, '0');
-  document.querySelector('.time').innerHTML = hh + '<br>' + mm;
-}, 1000);
-</script>
 </body>
 
 </html>
+
 
 
