@@ -32,15 +32,24 @@
   }
 
   .date-all {
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-direction: row;
-    flex-direction: row;
+    display: -webkit-box;      /* 老旧 Safari/Kindle 支持 */
+    display: -webkit-flex;     /* 新 Safari 支持 */
+    display: flex;             /* 标准写法 */
+
+    -webkit-box-orient: horizontal;  /* 水平排列 */
+    -webkit-flex-direction: row;     /* 水平排列 */
+    flex-direction: row;             /* 标准水平排列 */
+
+    -webkit-box-pack: start;   /* 左对齐 */
     -webkit-justify-content: flex-start;
     justify-content: flex-start;
+
+    -webkit-box-align: start;  /* 上对齐 */
     -webkit-align-items: flex-start;
     align-items: flex-start;
+
+    flex-wrap: nowrap;          /* 防止换行 */
+    width: 757px;               /* 必须给父元素明确宽度 */
   }
 
   .time {
