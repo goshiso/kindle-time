@@ -130,9 +130,13 @@
       domTime.style.height = "20px";
       domDateLeft.style.width = "600px";
       domDate.innerHTML = "10.4<br>SAT";
-    }else if (hh == "03" || hh == "14") {
-      domTime.style.height = "310px";
-      domDateLeft.style.width = "430px";
+    } else if (hh == "04" || hh == "14") {
+      domTime.style.height = "305px";
+      domDateLeft.style.width = "420px";
+      domDate.innerHTML = "10.24<br>SAT";
+    } else if (hh.startsWith("1") || hh == "03") {
+      domTime.style.height = "130px";
+      domDateLeft.style.width = "10px";
       domDate.innerHTML = "10.24<br>SAT";
     }
   }
@@ -158,5 +162,6 @@
 
 </body>
 </html>
+
 
 
