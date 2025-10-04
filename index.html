@@ -11,11 +11,6 @@
       font-family: TIME;
       src: url("time.ttf") format("truetype");
     }
-    
-    @font-face {
-      font-family: 'DATE';
-      src: url('date.ttf') format('truetype'); /* 字体文件路径 */
-    }
 
     * {
       margin: 0;
@@ -47,35 +42,15 @@
       margin: 0;            /* 去掉默认外边距 */
     }
 
-    .date {
-      letter-spacing: -2px;
-      font-family: DATE; 
-      font-size: 3rem  !important; /* 字体大小可调整 */
-      text-align: left;
-      line-height: 1;       /* 缩小行高 */
-      margin: 0;            /* 去掉默认外边距 */
-      display: none;
-    }
-
-    .cn-date {
-      font-size: 50px;  /* 农历/节气字号，可按需改 */
-      display: none;
-    }
-    
   </style>
 </head>
 
 <body>
   <div class="app">
-    <div class="date"></div>
     <div class="time"></div>
-    <div class="cn-date"></div>
   </div>
 
-  <script src="./calendar.min.js"></script>
   <script src="./index.min.js"></script>
 </body>
 
 </html>
-
-
