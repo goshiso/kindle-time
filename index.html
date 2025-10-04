@@ -21,7 +21,7 @@
 
   .time {
     width: 757px;   /* div固定宽度 */
-    height: 905px;  /* div固定高度 */
+    height: 906px;  /* div固定高度 */
     border: 2px solid black;
     display: flex;
     flex-direction: column;
@@ -64,7 +64,7 @@ function render() {
   // 根据 div 高度自动调整字体大小
   function fitText() {
     var divHeight = domTime.clientHeight;
-    domTime.style.fontSize = (divHeight / 3) + 'px'; // 两行文字占一半高度
+    domTime.style.fontSize = (divHeight / 2.9) + 'px'; // 两行文字占一半高度
   }
 
   // 初始化
@@ -82,6 +82,7 @@ function render() {
 
 </body>
 </html>
+
 
 
 
