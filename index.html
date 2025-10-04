@@ -90,8 +90,11 @@
     var hh = pad2(date.getHours());  // 小时 00–23
     var mm = pad2(date.getMinutes()); // 分钟 00–59
     var timeText = hh + "<br>" + mm;
-alert(hh);
+
     if (domTime.innerHTML != timeText) domTime.innerHTML = timeText;
+      if (hh == "02") {
+        alert(hh);
+      }
   }
 
   // 计算到下一分钟整点的毫秒数，然后在那时更新并递归调度下一次
@@ -115,6 +118,7 @@ alert(hh);
 
 </body>
 </html>
+
 
 
 
