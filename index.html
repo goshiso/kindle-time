@@ -109,6 +109,27 @@
   var domDateLeft = document.querySelector('.date-left');
   var domDate = document.querySelector('.date');
 
+  var urlQuery = geturl(location.href);
+  var config = {
+    fontSize: +(urlQuery.fs || 7),
+    rotate: urlQuery.r,
+    lang: urlQuery.l
+  };
+
+  function geturl(url) {
+    var arr = url.split("?");
+    if (!arr[1]) {
+      return {};
+    }
+    var res = arr[1].split("&");
+    var items = {};
+    for (var i = 0; i < res.length; i++) {
+      var a = res[i].split("=");
+      items[a[0]] = a[1];
+    }
+    return items;
+  }
+
   // 更新时间
   function render() {
     var time = new Date();
@@ -124,41 +145,49 @@
     var hh = pad2(date.getHours());  // 小时 00–23
     var mm = pad2(date.getMinutes()); // 分钟 00–59
     var timeText = hh + "<br>" + mm;
-hh = 999
-    mm = 999
-    if (domTime.innerHTML != timeText) domTime.innerHTML = "23<br>23";
+    var dateText = "".concat(
+    date.getMonth() + 1,  // 月份，注意要 +1
+    ".",
+    date.getDate(),       // 日
+      " ",
+      urlQuery.l == "en"
+        ? ["SUN","MON","TUE","WED","THU","FRI","SAT"][date.getDay()]  // 英文星期
+        : ["SUN","MON","TUE","WED","THU","FRI","SAT"][date.getDay()]
+    );
+
+    if (domTime.innerHTML != timeText) domTime.innerHTML = timeText;
     if (hh == "01" || hh == "11") {
       domTime.style.height = "20px";
       domDateLeft.style.width = "600px";
-      domDate.innerHTML = "10.4<br>SAT";
+      domDate.innerHTML = dateText.replace(" ", "<br>")
     } else if (hh == "04" || hh == "14") {
       domTime.style.height = "305px";
       domDateLeft.style.width = "420px";
-      domDate.innerHTML = "10.24<br>SAT";
+      domDate.innerHTML = dateText.replace(" ", "<br>")
     } else if (hh == "07" || hh == "17") {
       domTime.style.height = "305px";
       domDateLeft.style.width = "600px";
-      domDate.innerHTML = "10.24<br>SAT";
+      domDate.innerHTML = dateText.replace(" ", "<br>")
     } else if (hh == "23") {
       domTime.style.height = "260px";
       domDateLeft.style.width = "250px";
-      domDate.innerHTML = "10.24&nbsp;SAT";
+      domDate.innerHTML = dateText
     } else if (mm == "23" || mm == "25") {
       domTime.style.height = "680px";
       domDateLeft.style.width = "250px";
-      domDate.innerHTML = "10.24&nbsp;SAT";
+      domDate.innerHTML = dateText
     } else if (/^1\d$/.test(hh)) {
       domTime.style.height = "160px";
       domDateLeft.style.width = "10px";
-      domDate.innerHTML = "10.24<br>SAT";
+      domDate.innerHTML = dateText.replace(" ", "<br>");
     } else if (/^0\d$/.test(hh)) {
       domTime.style.height = "160px";
       domDateLeft.style.width = "130px";
-      domDate.innerHTML = "10.24<br>SAT";
-    } else if ("01"=="01" || /^2\d$/.test(hh)) {
+      domDate.innerHTML = dateText.replace(" ", "<br>");
+    } else if (/^2\d$/.test(hh)) {
       domTime.style.height = "105px";
       domDateLeft.style.width = "10px";
-      domDate.innerHTML = "10.24&nbsp;SAT";
+      domDate.innerHTML = dateText
     }
   }
 
@@ -183,11 +212,3 @@ hh = 999
 
 </body>
 </html>
-
-
-
-
-
-
-
-
