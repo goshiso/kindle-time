@@ -43,14 +43,22 @@
   var domTime = document.querySelector('.time');
 
   // 更新时间
-function renderNow() {
-  var now = new Date();
-  var len = now.getTime();
-  var offset = now.getTimezoneOffset() * 60000;
-  var date = new Date(len + offset + 3600000 * 9);
-  var hh = pad2(date.getHours());
-  var mm = pad2(date.getMinutes());
-  domTime.innerHTML = hh + "<br>" + mm;
+function render() {
+  var time = new Date();
+  var len = time.getTime();
+  var offset = time.getTimezoneOffset() * 60000;
+  var utcTime = len + offset;
+  var date = new Date(utcTime + 3600000 * 9);
+
+  // 时间（补零格式化）
+  function pad2(n) {
+    return n < 10 ? "0" + n : "" + n;
+  }
+  var hh = pad2(date.getHours());  // 小时 00–23
+  var mm = pad2(date.getMinutes()); // 分钟 00–59
+  var timeText = hh + "<br>" + mm;
+
+  if (domTime.innerHTML != timeText) domTime.innerHTML = timeText;
 }
 
 // 计算到下一分钟整点的毫秒数，然后在那时更新并递归调度下一次
@@ -58,7 +66,7 @@ function scheduleNextMinuteUpdate() {
   var now = new Date();
   var msToNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
   setTimeout(function () {
-    renderNow();
+    render();
     scheduleNextMinuteUpdate();
   }, msToNextMinute + 10); // +10ms 余量，防止早一点唤醒
 }
@@ -72,7 +80,7 @@ function scheduleNextMinuteUpdate() {
   // 初始化
   fitText();
   // 初始化一次显示并开始调度
-  renderNow();
+  render();
   scheduleNextMinuteUpdate();
 
 })();
@@ -80,6 +88,7 @@ function scheduleNextMinuteUpdate() {
 
 </body>
 </html>
+
 
 
 
