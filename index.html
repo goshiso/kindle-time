@@ -125,7 +125,7 @@
     var mm = pad2(date.getMinutes()); // 分钟 00–59
     var timeText = hh + "<br>" + mm;
 
-    if (domTime.innerHTML != timeText) domTime.innerHTML = "14<br>04";
+    if (domTime.innerHTML != timeText) domTime.innerHTML = "04<br>04";
     if (hh == "01" || hh == "11") {
       domTime.style.height = "20px";
       domDateLeft.style.width = "600px";
@@ -134,9 +134,13 @@
       domTime.style.height = "305px";
       domDateLeft.style.width = "420px";
       domDate.innerHTML = "10.24<br>SAT";
-    } else if (/^0\d$/.test(hh)) {
+    } else if (/^1\d$/.test(hh)) {
       domTime.style.height = "160px";
       domDateLeft.style.width = "10px";
+      domDate.innerHTML = "10.24<br>SAT";
+    } else if (/^0\d$/.test(hh)) {
+      domTime.style.height = "160px";
+      domDateLeft.style.width = "100px";
       domDate.innerHTML = "10.24<br>SAT";
     }
   }
@@ -162,6 +166,7 @@
 
 </body>
 </html>
+
 
 
 
