@@ -31,6 +31,13 @@
     align-items: flex-start;
   }
 
+  .date-all {
+    display: flex;
+    flex-direction: row;  /* 垂直排列 */
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
   .time {
     width: 757px;   /* div固定宽度 */
     height: 110px;  /* div固定高度 */
@@ -46,6 +53,15 @@
     box-sizing: border-box;
   }
 
+  .date-left {
+    width: 100px;   /* div固定宽度 */
+    height: 100px;  /* div固定高度 */
+    border: 1px solid red;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* 垂直居左 */
+    align-items: flex-start;     /* 水平居上 */
+  }
 
   .date {
     width: 100px;   /* div固定宽度 */
@@ -56,7 +72,7 @@
     justify-content: flex-start; /* 垂直居中 */
     align-items: flex-start;     /* 水平居中 */
     font-family: DATE;
-    font-size: 40px;
+    font-size: 45px;
     text-align: center;
     line-height: 1.2;
     box-sizing: border-box;
@@ -67,12 +83,16 @@
 
 <div class="app">
   <div class="time">01<br>01</div>
-  <div class="date">10.4<br>SAT</div>
+  <div class="date-all">
+    <div class="date-left"></div>
+    <div class="date">10.4<br>SAT</div>
+  </div>
 </div>
 
 <script>
 (function(){
   var domTime = document.querySelector('.time');
+  var domDateLeft = document.querySelector('.date-left');
   var domDate = document.querySelector('.date');
 
   // 更新时间
@@ -92,11 +112,11 @@
     var timeText = hh + "<br>" + mm;
 
     if (domTime.innerHTML != timeText) domTime.innerHTML = "01<br>01";
-      if (hh == "02") {
-
-        domTime.style.height = "20px";
-        domDate.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10.4<br>SAT";
-      }
+    if (hh == "02") {
+      domTime.style.height = "20px";
+      domDateLeft.style.width = "550px";
+      domDate.innerHTML = "10.4<br>SAT";
+    }
   }
 
   // 计算到下一分钟整点的毫秒数，然后在那时更新并递归调度下一次
@@ -120,16 +140,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
