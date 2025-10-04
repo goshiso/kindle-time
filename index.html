@@ -55,7 +55,7 @@
   .time {
     width: 757px;   /* div固定宽度 */
     height: 110px;  /* div固定高度 */
-    border: 0px solid black;
+    border: 1px solid black;
     display: flex;
     flex-direction: column;
     justify-content: flex-start; /* 垂直居上 */
@@ -70,7 +70,7 @@
   .date-left {
     width: 100px;   /* div固定宽度 */
     height: 100px;  /* div固定高度 */
-    border: 0px solid red;
+    border: 1px solid red;
     display: flex;
     flex-direction: column;
     justify-content: flex-start; /* 垂直居左 */
@@ -80,7 +80,7 @@
   .date {
     width: 100px;   /* div固定宽度 */
     height: 100px;  /* div固定高度 */
-    border: 0px solid red;
+    border: 1px solid red;
     display: flex;
     flex-direction: column;
     justify-content: flex-start; /* 垂直居中 */
@@ -163,7 +163,7 @@
       domDate.innerHTML = dateText.replace(" ", "<br>")
     } else if (/^4\d$/.test(mm)) {
       domTime.style.height = "700px";
-      domDateLeft.style.width = "20px";
+      domDateLeft.style.width = "50px";
       domDate.innerHTML = dateText.replace(" ", "<br>");
     } else if (hh == "04" || hh == "14") {
       domTime.style.height = "305px";
@@ -217,3 +217,4 @@
 
 </body>
 </html>
+
