@@ -249,8 +249,8 @@
       }
     } 
     
-    // 0/2X
-    //   XX
+    // 0X
+    // XX
     else if (/^0\d$/.test(hh)) {
       if (locDate != "H0x") {
         domTime.style.height = "160px";
@@ -258,7 +258,22 @@
         domDate.innerHTML = dateText.replace(" ", "<br>");
         locDate = "H0x"
       }
-    } else if (/^2\d$/.test(hh)) {
+    } 
+
+    // XX
+    // 0X
+    else if (/^0\d$/.test(hh)) {
+      if (locDate != "M0x") {
+        domTime.style.height = "580px";
+        domDateLeft.style.width = "130px";
+        domDate.innerHTML = dateText.replace(" ", "<br>");
+        locDate = "M0x"
+      }
+    } 
+
+    // 2X
+    // XX
+    else if (/^2\d$/.test(hh)) {
       if (locDate != "H2x") {
         domTime.style.height = "105px";
         domDateLeft.style.width = "10px";
@@ -266,6 +281,7 @@
         locDate = "H2x"
       }
     }
+
   }
 
   // 计算到下一分钟整点的毫秒数，然后在那时更新并递归调度下一次
@@ -289,5 +305,6 @@
 
 </body>
 </html>
+
 
 
