@@ -77,20 +77,7 @@
     align-items: flex-start;     /* 水平居上 */
   }
 
-  .date {
-    width: 100px;   /* div固定宽度 */
-    height: 100px;  /* div固定高度 */
-    border: 1px solid red;
-    border-collapse: collapse;
-    font-family: DATE;
-    font-size: 45px;
-  }
 
-  .date td {
-    width: 100px;
-    height: 100px;
-    /* 不写任何 text-align、vertical-align */
-  }
   
 </style>
 </head>
@@ -100,208 +87,21 @@
   <div class="time">01<br>01</div>
   <div class="date-all">
     <div class="date-left"></div>
-    <table><tr><td class="date" align="center" valign="middle">5</td></tr></table>
+    <table border="1" width="100" height="100" style="border-collapse:collapse;">
+      <tr>
+        <td align="center" valign="middle">
+          <div style="line-height:1; text-align:center;">
+            <div style="font-family:DATE; font-size:45px;">5</div>
+            <div style="font-family:DATE; font-size:20px;">sun</div>
+          </div>
+        </td>
+      </tr>
+    </table>
   </div>
 </div>
 
 <script>
-(function(){
-  var domTime = document.querySelector('.time');
-  var domDateLeft = document.querySelector('.date-left');
-  var domDate = document.querySelector('.date');
-  var locDate = 0;
 
-  var urlQuery = geturl(location.href);
-  var config = {
-    fontSize: +(urlQuery.fs || 7),
-    rotate: urlQuery.r,
-    lang: urlQuery.l
-  };
-
-  function geturl(url) {
-    var arr = url.split("?");
-    if (!arr[1]) {
-      return {};
-    }
-    var res = arr[1].split("&");
-    var items = {};
-    for (var i = 0; i < res.length; i++) {
-      var a = res[i].split("=");
-      items[a[0]] = a[1];
-    }
-    return items;
-  }
-
-  // 更新时间
-  function render() {
-    var time = new Date();
-    var len = time.getTime();
-    var offset = time.getTimezoneOffset() * 60000;
-    var utcTime = len + offset;
-    var date = new Date(utcTime + 3600000 * 9);
-
-    // 时间（补零格式化）
-    function pad2(n) {
-      return n < 10 ? "0" + n : "" + n;
-    }
-    var hh = pad2(date.getHours());  // 小时 00–23
-    var mm = pad2(date.getMinutes()); // 分钟 00–59
-hh=14
-mm=22
-    var timeText = hh + "<br>" + mm;
-    var dateText = "".concat(
-    date.getMonth() + 1,  // 月份，注意要 +1
-    ".",
-    date.getDate(),       // 日
-      " ",
-      urlQuery.l == "en"
-        ? ["SUN","MON","TUE","WED","THU","FRI","SAT"][date.getDay()]  // 英文星期
-        : ["SUN","MON","TUE","WED","THU","FRI","SAT"][date.getDay()]
-    );
-
-    if (domTime.innerHTML != timeText) {
-      domTime.innerHTML = timeText;
-    }
-dateText="6"
-    // 01/07/11/17
-    // XX
-    if (hh == "01" || hh == "11") {
-      if (locDate != "H01H11") {
-        domTime.style.height = "20px";
-        domDateLeft.style.width = "600px";
-//        domDate.innerHTML = dateText.replace(" ", "<br>")
-        locDate = "H01H11"
-      }
-    } else if (hh == "07" || hh == "17") {
-      if (locDate != "H07H17") {
-        domTime.style.height = "305px";
-        domDateLeft.style.width = "600px";
-        domDate.innerHTML = dateText.replace(" ", "<br>")
-        locDate = "H07H17"
-      }
-    } 
-    
-    // XX
-    // 4X
-    else if (/^4\d$/.test(mm)) {
-      if (locDate != "H4x") {
-        domTime.style.height = "730px";
-        domDateLeft.style.width = "50px";
-        domDate.innerHTML = dateText.replace(" ", "<br>");
-        locDate = "H4x"
-      }
-    } 
-    
-    // 1X
-    // XX
-    else if (/^1\d$/.test(hh)) {
-      if (locDate != "H4x") {
-        domTime.style.height = "160px";
-        domDateLeft.style.width = "10px";
-        domDate.innerHTML = dateText.replace(" ", "<br>");
-        locDate = "H4x"
-      }
-    } 
-
-    // XX
-    // 1X
-    else if (/^1\d$/.test(mm)) {
-      if (locDate != "H1x") {
-        domTime.style.height = "580px";
-        domDateLeft.style.width = "20px";
-        domDate.innerHTML = dateText.replace(" ", "<br>");
-        locDate = "H1x"
-      }
-    }
-    
-    // 04/14/23
-    // XX
-    else if (hh == "04" || hh == "14") {
-      if (locDate != "Hx4") {
-        domTime.style.height = "305px";
-        domDateLeft.style.width = "420px";
-        domDate.innerHTML = dateText.replace(" ", "<br>")
-        locDate = "Hx4"
-      }
-    } else if (hh == "23") {
-      if (locDate != "H23") {
-        domTime.style.height = "260px";
-        domDateLeft.style.width = "250px";
-        domDate.innerHTML = dateText
-        locDate = "H23"
-      }
-    } 
-    
-    // XX
-    // 23/25/29/52/53
-    else if (mm == "23" || mm == "25" || mm == "29") {
-      if (locDate != "M23M25M29") {
-        domTime.style.height = "680px";
-        domDateLeft.style.width = "250px";
-        domDate.innerHTML = dateText
-        locDate = "M23M25M29"
-      }
-    } else if (mm == "52" || mm == "53") {
-      if (locDate != "M52M53") {
-        domTime.style.height = "530px";
-        domDateLeft.style.width = "250px";
-        domDate.innerHTML = dateText
-        locDate = "M52M53"
-      }
-    } 
-    
-    // 0X
-    // XX
-    else if (/^0\d$/.test(hh)) {
-      if (locDate != "H0x") {
-        domTime.style.height = "160px";
-        domDateLeft.style.width = "130px";
-        domDate.innerHTML = dateText.replace(" ", "<br>");
-        locDate = "H0x"
-      }
-    } 
-
-    // XX
-    // 0X
-    else if (/^0\d$/.test(hh)) {
-      if (locDate != "M0x") {
-        domTime.style.height = "580px";
-        domDateLeft.style.width = "130px";
-        domDate.innerHTML = dateText.replace(" ", "<br>");
-        locDate = "M0x"
-      }
-    } 
-
-    // 2X
-    // XX
-    else if (/^2\d$/.test(hh)) {
-      if (locDate != "H2x") {
-        domTime.style.height = "105px";
-        domDateLeft.style.width = "10px";
-        domDate.innerHTML = dateText
-        locDate = "H2x"
-      }
-    }
-
-  }
-
-  // 计算到下一分钟整点的毫秒数，然后在那时更新并递归调度下一次
-  function scheduleNextMinuteUpdate() {
-    var now = new Date();
-    var msToNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
-    setTimeout(function () {
-      render();
-      scheduleNextMinuteUpdate();
-    }, msToNextMinute + 10); // +10ms 余量，防止早一点唤醒
-  }
-
-
-  // 初始化
-  render();
-  scheduleNextMinuteUpdate();
-
-
-})();
 </script>
 
 </body>
