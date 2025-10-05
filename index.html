@@ -77,8 +77,6 @@
     align-items: flex-start;     /* 水平居上 */
   }
 
-
-  
 </style>
 </head>
 <body>
@@ -172,7 +170,7 @@
         ? ["SUN","MON","TUE","WED","THU","FRI","SAT"][date.getDay()]  // 英文星期
         : ["SUN","MON","TUE","WED","THU","FRI","SAT"][date.getDay()]
 
-    if (domDateD.innerHTML != dateTextD) {
+    if (domDateW.innerHTML != dateTextW) {
       domDateD.innerHTML = dateTextD;
       domDateW.innerHTML = dateTextW;
     }
@@ -354,6 +352,7 @@
 
 </body>
 </html>
+
 
 
 
