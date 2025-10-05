@@ -163,8 +163,8 @@
     }
     var hh = pad2(date.getHours());  // 小时 00–23
     var mm = pad2(date.getMinutes()); // 分钟 00–59
-hh="22"
-mm="40"
+hh="04"
+mm="22"
     var timeText = hh + "<br>" + mm;
 
     var dateTextD = date.getDate()
@@ -206,7 +206,7 @@ mm="40"
     else if (/^4\d$/.test(mm)) {
       if (locDate != "H4x") {
         domTime.style.height = "730px";
-        domDateLeft.style.width = "50px";
+        domDateLeft.style.width = "60px";
         locDate = "H4x"
         shapeDateNew = "square"
       }
@@ -217,7 +217,7 @@ mm="40"
     else if (/^1\d$/.test(hh)) {
       if (locDate != "H4x") {
         domTime.style.height = "160px";
-        domDateLeft.style.width = "10px";
+        domDateLeft.style.width = "20px";
         locDate = "H4x"
         shapeDateNew = "square"
       }
@@ -354,6 +354,7 @@ mm="40"
 
 </body>
 </html>
+
 
 
 
