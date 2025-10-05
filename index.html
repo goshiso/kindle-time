@@ -55,7 +55,7 @@
   .time {
     width: 757px;   /* div固定宽度 */
     height: 110px;  /* div固定高度 */
-    border: 0px solid black;
+    border: 1px solid black;
     display: flex;
     flex-direction: column;
     justify-content: flex-start; /* 垂直居上 */
@@ -70,7 +70,7 @@
   .date-left {
     width: 100px;   /* div固定宽度 */
     height: 100px;  /* div固定高度 */
-    border: 0px solid red;
+    border: 1px solid red;
     display: flex;
     flex-direction: column;
     justify-content: flex-start; /* 垂直居左 */
@@ -80,7 +80,7 @@
   .date {
     width: 100px;   /* div固定宽度 */
     height: 100px;  /* div固定高度 */
-    border: 0px solid red;
+    border: 1px solid red;
     display: flex;
     flex-direction: column;
     justify-content: flex-start; /* 垂直居中 */
@@ -146,7 +146,8 @@
     }
     var hh = pad2(date.getHours());  // 小时 00–23
     var mm = pad2(date.getMinutes()); // 分钟 00–59
-
+    hh = 22
+    mm = 19
     var timeText = hh + "<br>" + mm;
     var dateText = "".concat(
     date.getMonth() + 1,  // 月份，注意要 +1
@@ -182,7 +183,14 @@
     
     // XX
     // 4X
-    else if (/^4\d$/.test(mm)) {
+    else if (/^1\d$/.test(mm)) {
+      if (locDate != "H1x") {
+        domTime.style.height = "580px";
+        domDateLeft.style.width = "50px";
+        domDate.innerHTML = dateText.replace(" ", "<br>");
+        locDate = "H1x"
+      }
+    } else if (/^4\d$/.test(mm)) {
       if (locDate != "H4x") {
         domTime.style.height = "730px";
         domDateLeft.style.width = "50px";
@@ -282,3 +290,4 @@
 
 </body>
 </html>
+
