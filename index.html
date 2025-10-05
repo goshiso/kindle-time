@@ -162,28 +162,6 @@
       }
     }
 
-    // XX
-    // 4X
-    else if (/^4\d$/.test(mm)) {
-      if (locDate != "H4x") {
-        domTime.style.height = "730px";
-        domDateLeft.style.width = "60px";
-        locDate = "H4x"
-        shapeDateNew = "square"
-      }
-    }
-
-    // XX
-    // X7
-    else if (/^\d7$/.test(mm)) {
-      if (locDate != "Mx7") {
-        domTime.style.height = "625px";
-        domDateLeft.style.width = "600px";
-        locDate = "Mx7"
-        shapeDateNew = "square"
-      }
-    }
-///////////////////////////////////////////////////////////////////
     // 1X
     // XX
     else if (/^1\d$/.test(hh)) {
@@ -213,35 +191,6 @@
       }
     }
 
-    // XX
-    // 1X
-    else if (/^1\d$/.test(mm)) {
-      if (locDate != "H1x") {
-        domTime.style.height = "580px";
-        domDateLeft.style.width = "30px";
-        locDate = "H1x"
-        shapeDateNew = "square"
-      }
-    }
-
-    // XX
-    // X1/4
-    else if (/^\d1$/.test(mm)) {
-      if (locDate != "Mx1") {
-        domTime.style.height = "580px";
-        domDateLeft.style.width = "600px";
-        locDate = "Mx1"
-        shapeDateNew = "square"
-      }
-    } else if (/^\d4$/.test(mm)) {
-      if (locDate != "Mx4") {
-        domTime.style.height = "625px";
-        domDateLeft.style.width = "600px";
-        locDate = "Mx4"
-        shapeDateNew = "square"
-      }
-    }
-///////////////////////////////////////////////////////////////////
     // 0X
     // XX
     else if (/^0\d$/.test(hh)) {
@@ -264,6 +213,52 @@
       }
     } 
 
+///////////////////////////////////////////////////////////////////
+
+    //   XX
+    // 1/4X
+    else if (/^1\d$/.test(mm)) {
+      if (locDate != "H1x") {
+        domTime.style.height = "580px";
+        domDateLeft.style.width = "30px";
+        locDate = "H1x"
+        shapeDateNew = "square"
+      }
+    } else if (/^4\d$/.test(mm)) {
+      if (locDate != "H4x") {
+        domTime.style.height = "730px";
+        domDateLeft.style.width = "60px";
+        locDate = "H4x"
+        shapeDateNew = "square"
+      }
+    }
+
+    // XX
+    // X1/4/7
+    else if (/^\d1$/.test(mm)) {
+      if (locDate != "Mx1") {
+        domTime.style.height = "580px";
+        domDateLeft.style.width = "600px";
+        locDate = "Mx1"
+        shapeDateNew = "square"
+      }
+    } else if (/^\d4$/.test(mm)) {
+      if (locDate != "Mx4") {
+        domTime.style.height = "625px";
+        domDateLeft.style.width = "600px";
+        locDate = "Mx4"
+        shapeDateNew = "square"
+      }
+    } else if (/^\d7$/.test(mm)) {
+      if (locDate != "Mx7") {
+        domTime.style.height = "625px";
+        domDateLeft.style.width = "600px";
+        locDate = "Mx7"
+        shapeDateNew = "square"
+      }
+    }
+
+///////////////////////////////////////////////////////////////////
 
     // XX
     // 0X
@@ -286,7 +281,9 @@
         shapeDateNew = "square"
       }
     }
+
 ///////////////////////////////////////////////////////////////////
+
     // 23
     // XX
     else if (hh == "23") {
@@ -369,4 +366,5 @@
 
 </body>
 </html>
+
 
