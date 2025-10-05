@@ -281,6 +281,17 @@
       }
     } 
 
+    // 20
+    // XX
+    else if (hh == "20") {
+      if (locDate != "H20") {
+        domTime.style.height = "160px";
+        domDateLeft.style.width = "458px";
+        locDate = "H20"
+        shapeDateNew = "square"
+      }
+    } 
+
     // XX
     // 0X
     else if (/^0\d$/.test(hh)) {
@@ -343,3 +354,4 @@
 
 </body>
 </html>
+
