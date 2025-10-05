@@ -100,9 +100,7 @@
                    -1px -1px 0 #000, 
                     1px -1px 0 #000, 
                    -1px 1px 0 #000;
-            ">
-              25
-            </div>
+            ">0</div>
             <div class="date-w" style="
                 font-family: DATE; 
                 font-size: 30px; 
@@ -112,7 +110,7 @@
                    -1px -1px 0 #000, 
                     1px -1px 0 #000, 
                    -1px 1px 0 #000;
-            ">sun</div>
+            ">DAT</div>
           </div>
         </td>
       </tr>
@@ -128,6 +126,8 @@
   var domDateD = document.querySelector('.date-d');
   var domDateW = document.querySelector('.date-w');
   var locDate = 0;
+  var shapeDateOld = "";
+  var shapeDateNew = "";
 
   var urlQuery = geturl(location.href);
   var config = {
@@ -172,9 +172,16 @@
         ? ["SUN","MON","TUE","WED","THU","FRI","SAT"][date.getDay()]  // 英文星期
         : ["SUN","MON","TUE","WED","THU","FRI","SAT"][date.getDay()]
 
+    if (domDateD.innerHTML != dateTextD) {
+      domDateD.innerHTML = dateTextD;
+      domDateW.innerHTML = dateTextW;
+    }
+
     if (domTime.innerHTML != timeText) {
       domTime.innerHTML = timeText;
     }
+
+    shapeDateOld = shapeDateNew;
 
     // 01/07/11/17
     // XX
@@ -182,17 +189,15 @@
       if (locDate != "H01H11") {
         domTime.style.height = "20px";
         domDateLeft.style.width = "600px";
-        domDateD.innerHTML = dateTextD
-        domDateW.innerHTML = dateTextW
         locDate = "H01H11"
+        shapeDateNew = "square"
       }
     } else if (hh == "07" || hh == "17") {
       if (locDate != "H07H17") {
         domTime.style.height = "305px";
         domDateLeft.style.width = "600px";
-        domDateD.innerHTML = dateTextD
-        domDateW.innerHTML = dateTextW
         locDate = "H07H17"
+        shapeDateNew = "square"
       }
     } 
     
@@ -202,9 +207,8 @@
       if (locDate != "H4x") {
         domTime.style.height = "730px";
         domDateLeft.style.width = "50px";
-        domDateD.innerHTML = dateTextD
-        domDateW.innerHTML = dateTextW
         locDate = "H4x"
+        shapeDateNew = "square"
       }
     } 
     
@@ -214,9 +218,8 @@
       if (locDate != "H4x") {
         domTime.style.height = "160px";
         domDateLeft.style.width = "10px";
-        domDateD.innerHTML = dateTextD
-        domDateW.innerHTML = dateTextW
         locDate = "H4x"
+        shapeDateNew = "square"
       }
     } 
 
@@ -226,9 +229,8 @@
       if (locDate != "H1x") {
         domTime.style.height = "580px";
         domDateLeft.style.width = "20px";
-        domDateD.innerHTML = dateTextD
-        domDateW.innerHTML = dateTextW
         locDate = "H1x"
+        shapeDateNew = "square"
       }
     }
     
@@ -238,21 +240,15 @@
       if (locDate != "Hx4") {
         domTime.style.height = "305px";
         domDateLeft.style.width = "420px";
-        domDateD.innerHTML = dateTextD
-        domDateW.innerHTML = dateTextW
         locDate = "Hx4"
+        shapeDateNew = "square"
       }
     } else if (hh == "23") {
       if (locDate != "H23") {
         domTime.style.height = "260px";
         domDateLeft.style.width = "250px";
-        // todo -> done
-        domDate.style.height = "60px"
-        domDate.style.width = "150px"
-        domDateD.style.fontSize="50px"
-        domDateD.innerHTML = dateTextD + '&nbsp;<span style="font-size: 25px;" >' + dateTextW + '</span>'
-        domDateW.style.display = 'none';
         locDate = "H23"
+        shapeDateNew = "rectangle"
       }
     } 
     
@@ -262,25 +258,15 @@
       if (locDate != "M23M25M29") {
         domTime.style.height = "680px";
         domDateLeft.style.width = "250px";
-        // todo -> done
-        domDate.style.height = "60px"
-        domDate.style.width = "150px"
-        domDateD.style.fontSize="50px"
-        domDateD.innerHTML = dateTextD + '&nbsp;<span style="font-size: 25px;" >' + dateTextW + '</span>'
-        domDateW.style.display = 'none';
         locDate = "M23M25M29"
+        shapeDateNew = "rectangle"
       }
     } else if (mm == "52" || mm == "53") {
       if (locDate != "M52M53") {
         domTime.style.height = "530px";
         domDateLeft.style.width = "250px";
-        // todo -> done
-        domDate.style.height = "60px"
-        domDate.style.width = "150px"
-        domDateD.style.fontSize="50px"
-        domDateD.innerHTML = dateTextD + '&nbsp;<span style="font-size: 25px;" >' + dateTextW + '</span>'
-        domDateW.style.display = 'none';
         locDate = "M52M53"
+        shapeDateNew = "rectangle"
       }
     } 
     
@@ -290,9 +276,8 @@
       if (locDate != "H0x") {
         domTime.style.height = "160px";
         domDateLeft.style.width = "130px";
-        domDateD.innerHTML = dateTextD
-        domDateW.innerHTML = dateTextW
         locDate = "H0x"
+        shapeDateNew = "square"
       }
     } 
 
@@ -302,9 +287,8 @@
       if (locDate != "M0x") {
         domTime.style.height = "580px";
         domDateLeft.style.width = "130px";
-        domDateD.innerHTML = dateTextD
-        domDateW.innerHTML = dateTextW
         locDate = "M0x"
+        shapeDateNew = "square"
       }
     } 
 
@@ -314,13 +298,25 @@
       if (locDate != "H2x") {
         domTime.style.height = "105px";
         domDateLeft.style.width = "10px";
-        // todo -> done
+        locDate = "H2x"
+        shapeDateNew = "rectangle"
+      }
+    }
+
+    if (shapeDateNew != shapeDateOld) {
+      if (shapeDateNew == "rectangle") {
         domDate.style.height = "60px"
         domDate.style.width = "150px"
         domDateD.style.fontSize="50px"
         domDateD.innerHTML = dateTextD + '&nbsp;<span style="font-size: 25px;" >' + dateTextW + '</span>'
         domDateW.style.display = 'none';
-        locDate = "H2x"
+      } else if (shapeDateNew == "square") {
+        domDate.style.height = "100px"
+        domDate.style.width = "100px"
+        domDateD.style.fontSize="60px"
+        domDateD.innerHTML = dateTextD
+        domDateW.innerHTML = dateTextW
+        domDateW.style.display = 'inline';
       }
     }
 
