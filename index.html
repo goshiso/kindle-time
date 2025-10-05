@@ -163,8 +163,7 @@
     }
     var hh = pad2(date.getHours());  // 小时 00–23
     var mm = pad2(date.getMinutes()); // 分钟 00–59
-hh="04"
-mm="22"
+
     var timeText = hh + "<br>" + mm;
 
     var dateTextD = date.getDate()
@@ -279,14 +278,14 @@ mm="22"
     else if (mm == "23" || mm == "25" || mm == "29") {
       if (locDate != "M23M25M29") {
         domTime.style.height = "680px";
-        domDateLeft.style.width = "250px";
+        domDateLeft.style.width = "305px";
         locDate = "M23M25M29"
         shapeDateNew = "rectangle"
       }
     } else if (mm == "52" || mm == "53") {
       if (locDate != "M52M53") {
         domTime.style.height = "530px";
-        domDateLeft.style.width = "250px";
+        domDateLeft.style.width = "305px";
         locDate = "M52M53"
         shapeDateNew = "rectangle"
       }
@@ -302,6 +301,17 @@ mm="22"
         shapeDateNew = "square"
       }
     } 
+
+    // XX
+    // X0
+    else if (/^\d0$/.test(hh)) {
+      if (locDate != "Mx0") {
+        domTime.style.height = "580px";
+        domDateLeft.style.width = "490px";
+        locDate = "Mx0"
+        shapeDateNew = "square"
+      }
+    }
 
     // 2X
     // XX
@@ -354,6 +364,7 @@ mm="22"
 
 </body>
 </html>
+
 
 
 
