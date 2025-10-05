@@ -180,16 +180,9 @@
       }
     } 
     
-    //   XX
-    // 1/4X
-    else if (/^1\d$/.test(mm)) {
-      if (locDate != "H1x") {
-        domTime.style.height = "580px";
-        domDateLeft.style.width = "20px";
-        domDate.innerHTML = dateText.replace(" ", "<br>");
-        locDate = "H1x"
-      }
-    } else if (/^4\d$/.test(mm)) {
+    // XX
+    // 4X
+    else if (/^4\d$/.test(mm)) {
       if (locDate != "H4x") {
         domTime.style.height = "730px";
         domDateLeft.style.width = "50px";
@@ -208,6 +201,17 @@
         locDate = "H4x"
       }
     } 
+
+    // XX
+    // 1X
+    else if (/^1\d$/.test(mm)) {
+      if (locDate != "H1x") {
+        domTime.style.height = "580px";
+        domDateLeft.style.width = "20px";
+        domDate.innerHTML = dateText.replace(" ", "<br>");
+        locDate = "H1x"
+      }
+    }
     
     // X4
     // XX
@@ -305,6 +309,7 @@
 
 </body>
 </html>
+
 
 
 
