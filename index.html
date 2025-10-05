@@ -128,27 +128,6 @@
   var shapeDateOld = "";
   var shapeDateNew = "";
 
-  var urlQuery = geturl(location.href);
-  var config = {
-    fontSize: +(urlQuery.fs || 7),
-    rotate: urlQuery.r,
-    lang: urlQuery.l
-  };
-
-  function geturl(url) {
-    var arr = url.split("?");
-    if (!arr[1]) {
-      return {};
-    }
-    var res = arr[1].split("&");
-    var items = {};
-    for (var i = 0; i < res.length; i++) {
-      var a = res[i].split("=");
-      items[a[0]] = a[1];
-    }
-    return items;
-  }
-
   // 更新时间
   function render() {
     var time = new Date();
@@ -167,9 +146,7 @@
     var timeText = hh + "<br>" + mm;
 
     var dateTextD = date.getDate()
-    var dateTextW = urlQuery.l == "en"
-        ? ["SUN","MON","TUE","WED","THU","FRI","SAT"][date.getDay()]  // 英文星期
-        : ["SUN","MON","TUE","WED","THU","FRI","SAT"][date.getDay()]
+    var dateTextW = ["SUN","MON","TUE","WED","THU","FRI","SAT"][date.getDay()]
 
     if (domDateW.innerHTML != dateTextW) {
       domDateD.innerHTML = dateTextD;
@@ -233,7 +210,7 @@
       }
     }
     
-    // 04/14/23
+    // 04/14
     // XX
     else if (hh == "04" || hh == "14") {
       if (locDate != "Hx4") {
@@ -242,14 +219,7 @@
         locDate = "Hx4"
         shapeDateNew = "square"
       }
-    } else if (hh == "23") {
-      if (locDate != "H23") {
-        domTime.style.height = "260px";
-        domDateLeft.style.width = "305px";
-        locDate = "H23"
-        shapeDateNew = "rectangle"
-      }
-    } 
+    }
 
     // 0X
     // XX
@@ -273,23 +243,6 @@
       }
     } 
 
-    // XX
-    // 23/25/29/52/53
-    else if (mm == "23" || mm == "25" || mm == "29") {
-      if (locDate != "M23M25M29") {
-        domTime.style.height = "680px";
-        domDateLeft.style.width = "305px";
-        locDate = "M23M25M29"
-        shapeDateNew = "rectangle"
-      }
-    } else if (mm == "52" || mm == "53") {
-      if (locDate != "M52M53") {
-        domTime.style.height = "530px";
-        domDateLeft.style.width = "305px";
-        locDate = "M52M53"
-        shapeDateNew = "rectangle"
-      }
-    } 
 
     // XX
     // 0X
@@ -333,6 +286,37 @@
         shapeDateNew = "square"
       }
     }
+
+
+
+    // 23
+    // XX
+    else if (hh == "23") {
+      if (locDate != "H23") {
+        domTime.style.height = "260px";
+        domDateLeft.style.width = "305px";
+        locDate = "H23"
+        shapeDateNew = "rectangle"
+      }
+    } 
+
+    // XX
+    // 23/25/29/52/53
+    else if (mm == "23" || mm == "25" || mm == "29") {
+      if (locDate != "M23M25M29") {
+        domTime.style.height = "680px";
+        domDateLeft.style.width = "305px";
+        locDate = "M23M25M29"
+        shapeDateNew = "rectangle"
+      }
+    } else if (mm == "52" || mm == "53") {
+      if (locDate != "M52M53") {
+        domTime.style.height = "530px";
+        domDateLeft.style.width = "305px";
+        locDate = "M52M53"
+        shapeDateNew = "rectangle"
+      }
+    } 
 
     // 2X
     // XX
@@ -385,6 +369,7 @@
 
 </body>
 </html>
+
 
 
 
