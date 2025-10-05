@@ -22,22 +22,6 @@
     align-items: center;
     height: 100vh;
     background: white;
-    
-    display: -webkit-box;      /* 老旧 Safari/Kindle 支持 */
-    display: -webkit-flex;     /* 新 Safari 支持 */
-    display: flex;             /* 标准写法 */
-
-    -webkit-box-orient: horizontal;  /* 水平排列 */
-    -webkit-flex-direction: row;     /* 水平排列 */
-    flex-direction: row;             /* 标准水平排列 */
-
-    -webkit-box-pack: start;   /* 左对齐 */
-    -webkit-justify-content: center;
-    justify-content: center;
-
-    -webkit-box-align: start;  /* 上对齐 */
-    -webkit-align-items: flex-start;
-    align-items: flex-start;
   }
 
   .app {
@@ -75,7 +59,7 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start; /* 垂直居上 */
-    align-items: center;     /* 水平居左 */
+    align-items: flex-start;     /* 水平居左 */
     font-family: TIME;
     font-size: 307px;
     text-align: center;
@@ -97,26 +81,26 @@
     width: 100px;   /* div固定宽度 */
     height: 100px;  /* div固定高度 */
     border: 1px solid red;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; /* 垂直居中 */
-    align-items: flex-start;     /* 水平居中 */
+    border-collapse: collapse;
     font-family: DATE;
     font-size: 45px;
-    text-align: center;
-    line-height: 1.2;
-    box-sizing: border-box;
-    white-space: nowrap;   /* 禁止换行 */
   }
+
+  .date td {
+    width: 100px;
+    height: 100px;
+    /* 不写任何 text-align、vertical-align */
+  }
+  
 </style>
 </head>
 <body>
 
 <div class="app">
-  <span class="time">00<br>00</span>
+  <div class="time">01<br>01</div>
   <div class="date-all">
     <div class="date-left"></div>
-    <div class="date">10.4<br>SAT</div>
+    <table><tr><td class="date" align="center" valign="middle">5</td></tr></table>
   </div>
 </div>
 
@@ -162,7 +146,8 @@
     }
     var hh = pad2(date.getHours());  // 小时 00–23
     var mm = pad2(date.getMinutes()); // 分钟 00–59
-
+hh=14
+mm=22
     var timeText = hh + "<br>" + mm;
     var dateText = "".concat(
     date.getMonth() + 1,  // 月份，注意要 +1
@@ -177,14 +162,14 @@
     if (domTime.innerHTML != timeText) {
       domTime.innerHTML = timeText;
     }
-
+dateText="6"
     // 01/07/11/17
     // XX
     if (hh == "01" || hh == "11") {
       if (locDate != "H01H11") {
         domTime.style.height = "20px";
         domDateLeft.style.width = "600px";
-        domDate.innerHTML = dateText.replace(" ", "<br>")
+//        domDate.innerHTML = dateText.replace(" ", "<br>")
         locDate = "H01H11"
       }
     } else if (hh == "07" || hh == "17") {
