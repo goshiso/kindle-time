@@ -303,12 +303,33 @@
     } 
 
     // XX
-    // X0
+    // X0/1/4/7
     else if (/^\d0$/.test(hh)) {
       if (locDate != "Mx0") {
         domTime.style.height = "580px";
-        domDateLeft.style.width = "490px";
+        domDateLeft.style.width = "450px";
         locDate = "Mx0"
+        shapeDateNew = "square"
+      }
+    } else if (/^\d1$/.test(hh)) {
+      if (locDate != "Mx1") {
+        domTime.style.height = "580px";
+        domDateLeft.style.width = "600px";
+        locDate = "Mx1"
+        shapeDateNew = "square"
+      }
+    } else if (/^\d4$/.test(hh)) {
+      if (locDate != "Mx4") {
+        domTime.style.height = "625px";
+        domDateLeft.style.width = "600px";
+        locDate = "Mx4"
+        shapeDateNew = "square"
+      }
+    } else if (/^\d7$/.test(hh)) {
+      if (locDate != "Mx7") {
+        domTime.style.height = "625px";
+        domDateLeft.style.width = "600px";
+        locDate = "Mx7"
         shapeDateNew = "square"
       }
     }
@@ -364,6 +385,7 @@
 
 </body>
 </html>
+
 
 
 
