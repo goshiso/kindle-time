@@ -283,36 +283,6 @@
     }
 
 ///////////////////////////////////////////////////////////////////
-
-    // 23
-    // XX
-    else if (hh == "23") {
-      if (locDate != "H23") {
-        domTime.style.height = "260px";
-        domDateLeft.style.width = "305px";
-        locDate = "H23"
-        shapeDateNew = "rectangle"
-      }
-    } 
-
-    // XX
-    // 23/25/29/52/53
-    else if (mm == "23" || mm == "25" || mm == "29") {
-      if (locDate != "M23M25M29") {
-        domTime.style.height = "680px";
-        domDateLeft.style.width = "305px";
-        locDate = "M23M25M29"
-        shapeDateNew = "rectangle"
-      }
-    } else if (mm == "52" || mm == "53") {
-      if (locDate != "M52M53") {
-        domTime.style.height = "530px";
-        domDateLeft.style.width = "305px";
-        locDate = "M52M53"
-        shapeDateNew = "rectangle"
-      }
-    } 
-
     // 2X
     // XX
     else if (/^2\d$/.test(hh)) {
@@ -366,6 +336,7 @@
 
 </body>
 </html>
+
 
 
 
