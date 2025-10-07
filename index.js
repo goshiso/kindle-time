@@ -80,7 +80,7 @@ const config = {
 };
 
 // domTime.style.fontSize = config.fontSize + "rem";
-domTime.style.fontSize = "30vh"
+domTime.style.fontSize = "36vh"
 domDate.style.fontSize = config.fontSize / 2.5 + "rem";
 // domCnDate.style.fontSize = config.fontSize / 4 + "rem";
 domApp.style.cssText = `-webkit-transform: rotate(${
@@ -91,3 +91,4 @@ render();
 setInterval(() => {
   render();
 }, 1000);
+
