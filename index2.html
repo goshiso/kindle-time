@@ -215,13 +215,13 @@
 
 ///////////////////////////////////////////////////////////////////
 
-    //   XX
-    // 1/4X
-    else if (/^1\d$/.test(mm)) {
-      if (locDate != "H1x") {
+    //     XX
+    // 1/3/4X
+    else if (/^1\d$/.test(mm) || /^3\d$/.test(mm)) {
+      if (locDate != "H1xH3x") {
         domTime.style.height = "580px";
         domDateLeft.style.width = "30px";
-        locDate = "H1x"
+        locDate = "H1xH3x"
         shapeDateNew = "square"
       }
     } else if (/^4\d$/.test(mm)) {
@@ -336,6 +336,7 @@
 
 </body>
 </html>
+
 
 
 
