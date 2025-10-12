@@ -154,10 +154,10 @@
     // X1
     // XX
     if (hh == "01" || hh == "11" || hh == "21") {
-      if (locDate != "H01H11") {
+      if (locDate != "Hx1") {
         domTime.style.height = "30px";
         domDateLeft.style.width = "600px";
-        locDate = "H01H11"
+        locDate = "Hx1"
         shapeDateNew = "square"
       }
     }
@@ -172,6 +172,17 @@
         shapeDateNew = "square"
       }
     } 
+
+    // X3
+    // XX
+    else if (hh == "03" || hh == "13" || hh == "23") {
+      if (locDate != "Hx3") {
+        domTime.style.height = "100px";
+        domDateLeft.style.width = "590px";
+        locDate = "Hx3"
+        shapeDateNew = "square"
+      }
+    }
 
     // X4/7
     // XX
@@ -215,16 +226,27 @@
 
 ///////////////////////////////////////////////////////////////////
 
-    //     XX
-    // 1/3/4X
-    else if (/^1\d$/.test(mm) || /^3\d$/.test(mm)) {
-      if (locDate != "H1xH3x") {
+    //   XX
+    // 1/4X
+    else if (/^1\d$/.test(mm)) {
+      if (locDate != "H1x") {
         domTime.style.height = "580px";
         domDateLeft.style.width = "30px";
-        locDate = "H1xH3x"
+        locDate = "H1x"
         shapeDateNew = "square"
       }
-    } else if (/^4\d$/.test(mm)) {
+    }
+    // XX
+    // 3X
+    else if (/^3\d$/.test(mm)) {
+      if (locDate != "H1x") {
+        domTime.style.height = "580px";
+        domDateLeft.style.width = "20px";
+        locDate = "H1x"
+        shapeDateNew = "square"
+      }
+    } 
+    else if (/^4\d$/.test(mm)) {
       if (locDate != "H4x") {
         domTime.style.height = "730px";
         domDateLeft.style.width = "60px";
@@ -336,6 +358,7 @@
 
 </body>
 </html>
+
 
 
 
