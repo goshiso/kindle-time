@@ -22,6 +22,7 @@
 
   .app {
     display: flex;
+    flex-direction: column; /* 改为垂直排列 */
     justify-content: center;
     align-items: center;
     width: 100%;
@@ -29,7 +30,6 @@
 
   .time {
     font-family: TIME, sans-serif;
-    /* 字号已调小至 180px，如果还觉得大，可以继续调低这个数值 */
     font-size: 120px;  
     text-align: center;
     line-height: 1;
@@ -39,13 +39,21 @@
     align-items: center;
   }
 
-  /* 强制冒号使用系统字体以显示为圆形，并微调大小 */
   .dot {
     font-family: sans-serif;
     margin: 0 10px;
     font-size: 1.5em; 
     position: relative;
-    top: -25px; /* 根据视觉效果微调冒号高度 */
+    top: -25px; 
+    color: red; /* 确保冒号也是红色 */
+  }
+
+  /* 图片样式 */
+  .random-pic {
+    margin-top: 30px; /* 时间和图片之间的间距 */
+    max-width: 80%;   /* 宽度占屏幕80%，防止撑破布局 */
+    height: auto;
+    border-radius: 8px; /* 可选：给图片加一点圆角 */
   }
 </style>
 </head>
@@ -55,6 +63,8 @@
   <div class="time" id="clock">
     <span id="hh">00</span><span class="dot">:</span><span id="mm">00</span>
   </div>
+  
+  <img src="https://picsum.photos/800/600" alt="Random Image" class="random-pic">
 </div>
 
 <script>
@@ -65,13 +75,11 @@
   function render() {
     var now = new Date();
     
-    // 如果需要强制 +9 时区，请取消下面注释
-    
+    // 强制 +9 时区
     var len = now.getTime();
     var offset = now.getTimezoneOffset() * 60000;
     var utcTime = len + offset;
     now = new Date(utcTime + 3600000 * 9); 
-    
 
     function pad2(n) {
       return n < 10 ? "0" + n : "" + n;
