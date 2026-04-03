@@ -66,12 +66,12 @@
     var now = new Date();
     
     // 如果需要强制 +9 时区，请取消下面注释
-    /*
+    
     var len = now.getTime();
     var offset = now.getTimezoneOffset() * 60000;
     var utcTime = len + offset;
     now = new Date(utcTime + 3600000 * 9); 
-    */
+    
 
     function pad2(n) {
       return n < 10 ? "0" + n : "" + n;
