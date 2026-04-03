@@ -93,9 +93,14 @@
     if (domHH.innerHTML !== hh) domHH.innerHTML = hh;
     if (domMM.innerHTML !== mm) {
         domMM.innerHTML = mm;
-        // 2. 只有在分钟变化时，才局部刷新图片
-        // 通过添加随机参数绕过缓存
-        domImg.src = "https://picsum.photos/800/600?t=" + new Date().getTime();
+
+        // 2. 每10分钟（00, 10, 20...）刷新一次图片
+        // 逻辑：如果当前分钟能被10整除，且这一分钟还没刷新过图片
+        if (rawMinutes % 10 === 0 && lastUpdateMinute !== rawMinutes) {
+            domImg.src = "https://picsum.photos/800/600?t=" + new Date().getTime();
+            lastUpdateMinute = rawMinutes;
+        }
+
     }
   }
 
