@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clock For Kindle</title>
+<style>
+  @font-face {
+    font-family: TIME;
+    src: url("fix7.ttf") format("truetype");
+  }
+
+  body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: white;
+    overflow: hidden;
+  }
+
+  .app {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+
+  .time {
+    font-family: TIME, sans-serif;
+    /* 调整字号以适应单行显示，可以根据 Kindle 屏幕宽度微调 */
+    font-size: 220px; 
+    text-align: center;
+    line-height: 1;
+    color: black;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="time" id="clock">00:00</div>
+</div>
+
+<script>
+(function(){
+  var domTime = document.getElementById('clock');
+
+  function render() {
+    var now = new Date();
+    
+    // 获取当前时间（已包含时区偏移）
+    // 如果你的设备需要强制特定时区（如原代码中的 +9 偏移），请取消下面注释：
+    /*
+    var len = now.getTime();
+    var offset = now.getTimezoneOffset() * 60000;
+    var utcTime = len + offset;
+    now = new Date(utcTime + 3600000 * 9); 
+    */
+
+    function pad2(n) {
+      return n < 10 ? "0" + n : "" + n;
+    }
+
+    var hh = pad2(now.getHours());
+    var mm = pad2(now.getMinutes());
+
+    var timeText = hh + ":" + mm;
+
+    // 只有在文字变化时才更新 DOM，节省能耗（对 E-ink 很重要）
+    if (domTime.innerHTML !== timeText) {
+      domTime.innerHTML = timeText;
+    }
+  }
+
+  function scheduleNextMinuteUpdate() {
+    var now = new Date();
+    // 计算距离下一分钟开始还有多少毫秒
+    var msToNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
+    
+    setTimeout(function () {
+      render();
+      scheduleNextMinuteUpdate();
+    }, msToNextMinute + 50); // 稍微延迟以确保时间已跨过临界点
+  }
+
+  // 初始化
+  render();
+  scheduleNextMinuteUpdate();
+})();
+</script>
+
+</body>
+</html>
