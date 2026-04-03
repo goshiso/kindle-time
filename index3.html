@@ -22,7 +22,7 @@
 
   .app {
     display: flex;
-    flex-direction: column; /* 改为垂直排列 */
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     width: 100%;
@@ -44,16 +44,16 @@
     margin: 0 10px;
     font-size: 1.5em; 
     position: relative;
-    top: -25px; 
-    color: red; /* 确保冒号也是红色 */
+    top: -25px;
+    color: red;
   }
 
-  /* 图片样式 */
   .random-pic {
-    margin-top: 30px; /* 时间和图片之间的间距 */
-    max-width: 80%;   /* 宽度占屏幕80%，防止撑破布局 */
+    margin-top: 20px;
+    max-width: 90%;
+    max-height: 60vh; /* 限制高度，防止图片太长把时间挤出屏幕 */
     height: auto;
-    border-radius: 8px; /* 可选：给图片加一点圆角 */
+    border-radius: 5px;
   }
 </style>
 </head>
@@ -64,13 +64,14 @@
     <span id="hh">00</span><span class="dot">:</span><span id="mm">00</span>
   </div>
   
-  <img src="https://picsum.photos/800/600" alt="Random Image" class="random-pic">
+  <img id="bg-img" src="https://picsum.photos/800/600" alt="Random Image" class="random-pic">
 </div>
 
 <script>
 (function(){
   var domHH = document.getElementById('hh');
   var domMM = document.getElementById('mm');
+  var domImg = document.getElementById('bg-img');
 
   function render() {
     var now = new Date();
@@ -79,17 +80,23 @@
     var len = now.getTime();
     var offset = now.getTimezoneOffset() * 60000;
     var utcTime = len + offset;
-    now = new Date(utcTime + 3600000 * 9); 
+    var dateAdjusted = new Date(utcTime + 3600000 * 9); 
 
     function pad2(n) {
       return n < 10 ? "0" + n : "" + n;
     }
 
-    var hh = pad2(now.getHours());
-    var mm = pad2(now.getMinutes());
+    var hh = pad2(dateAdjusted.getHours());
+    var mm = pad2(dateAdjusted.getMinutes());
 
+    // 1. 刷新时间文本
     if (domHH.innerHTML !== hh) domHH.innerHTML = hh;
-    if (domMM.innerHTML !== mm) domMM.innerHTML = mm;
+    if (domMM.innerHTML !== mm) {
+        domMM.innerHTML = mm;
+        // 2. 只有在分钟变化时，才局部刷新图片
+        // 通过添加随机参数绕过缓存
+        domImg.src = "https://picsum.photos/800/600?t=" + new Date().getTime();
+    }
   }
 
   function scheduleNextMinuteUpdate() {
@@ -102,6 +109,7 @@
     }, msToNextMinute + 50);
   }
 
+  // 初始化调用
   render();
   scheduleNextMinuteUpdate();
 })();
