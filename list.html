@@ -38,27 +38,13 @@
     <ul id="fileList" class="file-list"></ul>
 
     <script>
-        // 1. 定义中转 IP 的数据源
-        const CONFIG_URL = 'https://goshiso.github.io/kindle-time/text';
+        const API_URL = 'http://192.168.68.68/list';
 
         async function fetchFiles() {
             const listElement = document.getElementById('fileList');
             const statusElement = document.getElementById('status');
 
             try {
-                // 2. 第一步：获取 tf (IP地址)
-                const configResponse = await fetch(CONFIG_URL);
-                if (!configResponse.ok) throw new Error('无法获取配置 IP');
-                
-                const configData = await configResponse.json();
-                const targetIp = configData.tf; // 提取 tf 字段
-                
-                if (!targetIp) throw new Error('配置中未发现有效的 IP 地址');
-
-                // 3. 第二步：拼接最终的 API 地址
-                const API_URL = `http://${targetIp}/list`;
-
-                // 4. 第三步：获取文件列表（后续逻辑保持不变）
                 const response = await fetch(API_URL);
                 
                 if (!response.ok) {
@@ -75,11 +61,11 @@
                 statusElement.innerText = historyFiles.length > 0 ? "" : "未发现匹配的历史文件。";
 
                 // 渲染列表
-                listElement.innerHTML = ''; // 清空之前的加载提示
                 historyFiles.forEach(file => {
                     const li = document.createElement('li');
                     li.className = 'file-item';
                     
+                    // 将 Unix 时间戳转换为本地时间格式
                     const date = new Date(file.time * 1000).toLocaleString();
                     
                     li.innerHTML = `
@@ -91,10 +77,11 @@
 
             } catch (error) {
                 console.error('获取数据失败:', error);
-                statusElement.innerHTML = `<span class="error">运行出错: ${error.message}</span>`;
+                statusElement.innerHTML = `<span class="error">无法读取数据: ${error.message}</span>`;
             }
         }
 
+        // 页面加载后执行
         fetchFiles();
     </script>
 </body>
