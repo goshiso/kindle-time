@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文件列表读取</title>
+    <title>文件列表读取 - 增强版</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -16,14 +16,20 @@
         }
         .file-item {
             background: #f4f4f4;
-            margin-bottom: 8px;
-            padding: 10px 15px;
-            border-radius: 4px;
+            margin-bottom: 12px;
+            padding: 12px 15px;
+            border-radius: 6px;
             border-left: 4px solid #007bff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         .file-info {
             font-size: 0.85em;
             color: #666;
+            margin-top: 4px;
+        }
+        .id-time {
+            color: #28a745; /* 绿色区分反推时间 */
+            font-weight: 500;
         }
         .error {
             color: #d9534f;
@@ -33,56 +39,111 @@
 </head>
 <body>
 
-    <h2>历史文件列表 (history_*)</h2>
-    <div id="status">正在加载数据...</div>
-    <ul id="fileList" class="file-list"></ul>
+<h2>历史文件列表 (history_*)</h2>
+<div id="status">正在初始化数据源...</div>
+<ul id="fileList" class="file-list"></ul>
 
-    <script>
-        const API_URL = 'http://192.168.68.68/list';
+<script>
+    const CONFIG_URL = 'https://goshiso.github.io/kindle-time/text';
 
-        async function fetchFiles() {
-            const listElement = document.getElementById('fileList');
-            const statusElement = document.getElementById('status');
+    // 反推 ID 逻辑的函数
+    function parseTimeFromID(filename) {
+        try {
+            // 匹配逻辑：
+            // history_
+            // ([A-Z0-9]{4}) -> 前4位：年(1)月(1)日(1)时(1)
+            // [A-Z0-9]{2}   -> 中间2位：分钟(忽略)
+            // [a-z]{2}      -> 2位随机小写字母
+            // _(\d{2})(\d{2}) -> 下划线后的 hh 和 mm
+            const match = filename.match(/history_([A-Z0-9]{4})[A-Z0-9]{2}[a-z]{2}_(\d{2})(\d{2})/);
 
-            try {
-                const response = await fetch(API_URL);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP 错误! 状态码: ${response.status}`);
-                }
+            if (!match) return null;
 
-                const data = await response.json();
+            const datePartId = match[1]; // 前4位 ID
+            const hh = match[2];         // 文件名末尾的小时
+            const mm = match[3];         // 文件名末尾的分钟
 
-                // 过滤以 history_ 开头的文件
-                const historyFiles = data.filter(item => 
-                    item.name.startsWith('history_') && item.type === 'file'
-                );
+            const from32Hex = (str) => parseInt(str, 32);
 
-                statusElement.innerText = historyFiles.length > 0 ? "" : "未发现匹配的历史文件。";
+            // 1. 年、月、日 从 ID 的前 3 位反推
+            const year  = 2000 + from32Hex(datePartId[0]);
+            const month = from32Hex(datePartId[1]) - 1; // JS 月份 0-11
+            const day   = from32Hex(datePartId[2]);
 
-                // 渲染列表
-                historyFiles.forEach(file => {
-                    const li = document.createElement('li');
-                    li.className = 'file-item';
-                    
-                    // 将 Unix 时间戳转换为本地时间格式
-                    const date = new Date(file.time * 1000).toLocaleString();
-                    
-                    li.innerHTML = `
-                        <strong>${file.name}</strong>
-                        <div class="file-info">最后修改时间: ${date}</div>
-                    `;
-                    listElement.appendChild(li);
-                });
+            // 2. 格式化日期部分
+            const dateStr = new Date(year, month, day).toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
 
-            } catch (error) {
-                console.error('获取数据失败:', error);
-                statusElement.innerHTML = `<span class="error">无法读取数据: ${error.message}</span>`;
-            }
+            // 3. 组合最终结果：年月日(来自ID) + 时分(来自文件名末尾)
+            return `${dateStr} ${hh}:${mm}`;
+        } catch (e) {
+            console.error("解析 ID 出错:", e);
+            return null;
         }
+    }
 
-        // 页面加载后执行
-        fetchFiles();
-    </script>
+    async function fetchFiles() {
+        const listElement = document.getElementById('fileList');
+        const statusElement = document.getElementById('status');
+
+        try {
+            // 第一步：从 github 获取中转 IP
+            statusElement.innerText = "正在获取中转服务器地址...";
+            const res1 = await fetch(CONFIG_URL);
+            if (!res1.ok) throw new Error('无法获取中转配置');
+            const relayIp = (await res1.text()).trim();
+
+            // 第二步：从 record 接口获取最终 tf (IP)
+            statusElement.innerText = "正在定位目标服务器...";
+            const res2 = await fetch(`http://${relayIp}/record`);
+            if (!res2.ok) throw new Error('无法连接 record 记录服务器');
+            const recordData = await res2.json();
+            const targetIp = recordData.tf;
+
+            if (!targetIp) throw new Error('未发现有效的目标 IP (tf)');
+
+            // 第三步：获取列表
+            statusElement.innerText = "正在读取文件列表...";
+            const API_URL = `http://${targetIp}/list`;
+            const response = await fetch(API_URL);
+            if (!response.ok) throw new Error(`列表获取失败: ${response.status}`);
+
+            const data = await response.json();
+            const historyFiles = data.filter(item =>
+                item.name.startsWith('history_') && item.type === 'file'
+            );
+
+            statusElement.innerText = historyFiles.length > 0 ? "" : "未发现匹配的历史文件。";
+            listElement.innerHTML = '';
+
+            historyFiles.forEach(file => {
+                const li = document.createElement('li');
+                li.className = 'file-item';
+
+                // 系统返回的修改时间 (Unix Timestamp)
+                const systemDate = new Date(file.time * 1000).toLocaleString();
+
+                // 从文件名 ID 反推的时间
+                const idDate = parseTimeFromID(file.name);
+
+                li.innerHTML = `
+                        <strong>${file.name}</strong>
+                        <div class="file-info">最后修改时间: ${systemDate}</div>
+                        <div class="file-info id-time">ID 反推时间: ${idDate || '无法解析'}</div>
+                    `;
+                listElement.appendChild(li);
+            });
+
+        } catch (error) {
+            console.error('获取数据失败:', error);
+            statusElement.innerHTML = `<span class="error">配置错误: ${error.message}</span>`;
+        }
+    }
+
+    fetchFiles();
+</script>
 </body>
 </html>
