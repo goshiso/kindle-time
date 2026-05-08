@@ -471,7 +471,7 @@
                     // 根据要求，修改显示顺序：顶部显示反推时间，中间最后修改时间，底部文件名
                     li.innerHTML = `
                             <strong style="display:block; margin-bottom:4px; font-size:15px; color:#0f172a;">${idDate || '无法解析'}</strong>
-                            <div class="file-info">最后修改时间: ${systemDate}</div>
+                            <div class="file-info" style="display: none;">最后修改时间: ${systemDate}</div>
                             <div class="file-info id-time" style="display: none;">${file.name}</div>
                         `;
                     ul.appendChild(li);
