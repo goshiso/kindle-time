@@ -3,81 +3,260 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文件列表读取 - 增强版</title>
+    <title>文件列表读取 - 左右分栏历史版</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            padding: 20px;
-            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            color: #333;
         }
+
+        /* 左侧侧边栏 */
+        .sidebar {
+            width: 340px;
+            background: #f8fafc;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+            background: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            z-index: 10;
+        }
+
+        .sidebar-header h2 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            color: #1e293b;
+        }
+
+        .file-list-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        /* 分组样式 */
+        .group-container {
+            margin-bottom: 20px;
+        }
+
+        .group-header {
+            font-size: 13px;
+            font-weight: bold;
+            color: #475569;
+            background: #e2e8f0;
+            padding: 6px 12px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
         .file-list {
             list-style: none;
             padding: 0;
+            margin: 0;
         }
+
         .file-item {
-            background: #f4f4f4;
-            margin-bottom: 12px;
+            background: #ffffff;
+            margin-bottom: 10px;
             padding: 12px 15px;
             border-radius: 6px;
-            border-left: 4px solid #007bff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 4px solid #94a3b8;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
+
+        .file-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .file-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.08);
+        }
+
+        .file-item.active {
+            background: #eef2ff;
+            border-left-color: #3b82f6;
+            box-shadow: 0 0 0 1px #3b82f6 inset;
+        }
+
         .file-info {
             font-size: 0.85em;
-            color: #666;
+            color: #64748b;
             margin-top: 4px;
         }
+
         .id-time {
-            color: #28a745; /* 绿色区分反推时间 */
+            color: #059669;
             font-weight: 500;
         }
+
+        /* 右侧主内容区 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+        }
+
+        .main-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+
+        .main-header h2 {
+            margin: 0;
+            font-size: 22px;
+            color: #0f172a;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
         .error {
-            color: #d9534f;
+            color: #ef4444;
             font-weight: bold;
+        }
+
+        .empty-state {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #94a3b8;
+            font-size: 18px;
+        }
+
+        /* ==================================
+           右侧 History Grid 专属样式
+           ================================== */
+        .hist-grid {
+            display: grid;
+            width: 100%;
+            text-align: center;
+            font-size: 14px;
+            border-top: 1px solid #a0c6e5;
+            border-left: 1px solid #a0c6e5;
+            box-sizing: border-box;
+            background: #fff;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .h-head {
+            background: #eef6fc;
+            color: #1e293b;
+            font-weight: bold;
+            padding: 12px 5px;
+            border-bottom: 1px solid #a0c6e5;
+            border-right: 1px solid #a0c6e5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .h-cell {
+            padding: 10px 5px;
+            border-bottom: 1px solid #a0c6e5;
+            border-right: 1px solid #a0c6e5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            color: #333;
+        }
+
+        .h-wind {
+            color: #475569;
+            background: #f8fafc;
+        }
+
+        .h-row-alt {
+            background: #f1f5f9;
+        }
+
+        .diff-pos {
+            color: #166534; /* 绿色 */
+        }
+
+        .diff-neg {
+            color: #991b1b; /* 红色 */
+        }
+
+        pre {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
     </style>
 </head>
 <body>
 
-<h2>历史文件列表 (history_*)</h2>
-<div id="status">正在初始化数据源...</div>
-<ul id="fileList" class="file-list"></ul>
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h2>历史文件列表</h2>
+        <div id="status" style="font-size: 13px; color: #64748b;">正在初始化数据源...</div>
+    </div>
+    <div id="fileList" class="file-list-container">
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="main-header">
+        <h2 id="contentTitle">未选择文件</h2>
+    </div>
+    <div id="fileContent" class="content-area">
+        <div class="empty-state">请在左侧选择一个文件查看详细记录</div>
+    </div>
+</div>
 
 <script>
     const CONFIG_URL = 'https://goshiso.github.io/kindle-time/text';
+    let globalTargetIp = ''; // 保存全局目标 IP 以供读取文件使用
 
     // 反推 ID 逻辑的函数
     function parseTimeFromID(filename) {
         try {
-            // 匹配逻辑：
-            // history_
-            // ([A-Z0-9]{4}) -> 前4位：年(1)月(1)日(1)时(1)
-            // [A-Z0-9]{2}   -> 中间2位：分钟(忽略)
-            // [a-z]{2}      -> 2位随机小写字母
-            // _(\d{2})(\d{2}) -> 下划线后的 hh 和 mm
             const match = filename.match(/history_([A-Z0-9]{4})[A-Z0-9]{2}[a-z]{2}_(\d{2})(\d{2})/);
-
             if (!match) return null;
 
-            const datePartId = match[1]; // 前4位 ID
-            const hh = match[2];         // 文件名末尾的小时
-            const mm = match[3];         // 文件名末尾的分钟
+            const datePartId = match[1];
+            const hh = match[2];
+            const mm = match[3];
 
             const from32Hex = (str) => parseInt(str, 32);
 
-            // 1. 年、月、日 从 ID 的前 3 位反推
             const year  = 2000 + from32Hex(datePartId[0]);
-            const month = from32Hex(datePartId[1]) - 1; // JS 月份 0-11
+            const month = from32Hex(datePartId[1]) - 1;
             const day   = from32Hex(datePartId[2]);
 
-            // 2. 格式化日期部分
             const dateStr = new Date(year, month, day).toLocaleDateString('zh-CN', {
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit'
             });
 
-            // 3. 组合最终结果：年月日(来自ID) + 时分(来自文件名末尾)
             return `${dateStr} ${hh}:${mm}`;
         } catch (e) {
             console.error("解析 ID 出错:", e);
@@ -85,18 +264,128 @@
         }
     }
 
+    // 获取并展示选中文件的内容
+    async function loadFileContent(filename, listItemElement) {
+        // 更新左侧列表的选中高亮状态
+        document.querySelectorAll('.file-item').forEach(el => el.classList.remove('active'));
+        listItemElement.classList.add('active');
+
+        const titleEl = document.getElementById('contentTitle');
+        const contentEl = document.getElementById('fileContent');
+
+        titleEl.innerText = filename;
+        contentEl.innerHTML = '<div class="empty-state">正在加载数据...</div>';
+
+        try {
+            if (!globalTargetIp) throw new Error("目标服务器 IP 未就绪");
+
+            const url = `http://${globalTargetIp}/${filename}`;
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`文件获取失败: ${response.status}`);
+
+            const text = await response.text();
+            const lines = text.trim().split('\n').filter(l => l.trim() !== '');
+
+            if (lines.length === 0) {
+                contentEl.innerHTML = '<div class="empty-state">文件内容为空</div>';
+                return;
+            }
+
+            // 尝试将每一行解析为 JSON
+            let isJsonFormat = true;
+            let records = [];
+            for (let line of lines) {
+                try {
+                    records.push(JSON.parse(line));
+                } catch(e) {
+                    isJsonFormat = false;
+                    break;
+                }
+            }
+
+            // 如果全部为规范的 JSON 格式且包含 players 数组，使用 Grid 布局渲染
+            if (isJsonFormat && records.length > 0 && records[0].players) {
+                const playerNames = records[0].players.map(p => p.name);
+
+                // 构造网格样式，左侧两列固定 90px，右侧玩家列自适应平分
+                let html = `<div class='hist-grid' style='grid-template-columns: 90px 90px repeat(${playerNames.length}, 1fr);'>`;
+
+                // 表头
+                html += `<div class='h-head'>类型</div><div class='h-head'>场风</div>`;
+                playerNames.forEach(name => { html += `<div class='h-head'>${name}</div>`; });
+
+                // 起始行 (默认全为 25000)
+                html += `<div class='h-cell h-wind' style="font-size:12px">起始</div>
+                         <div class='h-cell h-wind' style="font-size:12px">--</div>`;
+                playerNames.forEach(name => {
+                    html += `<div class='h-cell' style="flex-direction:column; line-height:1.2;">
+                                <span style="font-weight:bold; color:#64748b;">25000</span>
+                             </div>`;
+                });
+
+                // 遍历记录渲染差值
+                records.forEach((record, i) => {
+                    let rowClass = (i % 2 === 0) ? '' : 'h-row-alt';
+                    let typeText = record.type || '结算';
+                    let windText = `${record.wind || ''}${record.honba !== undefined ? record.honba + '本场' : ''}`;
+
+                    html += `<div class='h-cell h-wind ${rowClass}' style="font-size:12px">${typeText}</div>
+                             <div class='h-cell h-wind ${rowClass}' style="font-size:12px">${windText}</div>`;
+
+                    record.players.forEach(p => {
+                        // 与上一行记录做对比，如果是第一行则与 25000 对比
+                        let prevScore = (i === 0) ? 25000 : records[i-1].players.find(pp => pp.name === p.name).score;
+                        let diff = p.score - prevScore;
+
+                        let diffText = "--";
+                        let diffClass = "";
+                        if (diff !== 0) {
+                            diffText = `${diff > 0 ? '+' : ''}${diff}`;
+                            diffClass = diff > 0 ? 'diff-pos' : 'diff-neg';
+                        }
+
+                        html += `<div class='h-cell ${rowClass} ${diffClass}' style="flex-direction:column; line-height:1.2; font-weight:bold; font-size:16px;">
+                                ${diffText}
+                             </div>`;
+                    });
+                });
+
+                // 合计行 (最后记录的绝对分数)
+                let lastRecord = records[records.length - 1];
+                html += `<div class='h-cell h-wind' style="grid-column: span 2; font-size:14px; font-weight:bold; background:#fff5cc; color:#000;">合计</div>`;
+
+                lastRecord.players.forEach(p => {
+                    let finalScore = p.score;
+                    let negativeStyle = finalScore < 0 ? 'color: #ef4444;' : ''; // 负分变红
+                    html += `<div class='h-cell' style="font-weight:900; font-size:17px; background:#fff5cc; color:#000; ${negativeStyle}">
+                                ${finalScore}
+                             </div>`;
+                });
+
+                html += `</div>`;
+                contentEl.innerHTML = html;
+            } else {
+                // 如果不是预期的 JSON 行格式，则直接显示纯文本
+                contentEl.innerHTML = `<pre>${text}</pre>`;
+            }
+
+        } catch (error) {
+            console.error('获取文件内容失败:', error);
+            contentEl.innerHTML = `<div class="empty-state error">读取失败: ${error.message}</div>`;
+        }
+    }
+
+    // 初始化左侧文件列表
     async function fetchFiles() {
         const listElement = document.getElementById('fileList');
         const statusElement = document.getElementById('status');
 
         try {
-            // 第一步：从 github 获取中转 IP
             statusElement.innerText = "正在获取中转服务器地址...";
             const res1 = await fetch(CONFIG_URL);
             if (!res1.ok) throw new Error('无法获取中转配置');
             const relayIp = (await res1.text()).trim();
 
-            // 第二步：从 record 接口获取最终 tf (IP)
             statusElement.innerText = "正在定位目标服务器...";
             const res2 = await fetch(`http://${relayIp}/record`);
             if (!res2.ok) throw new Error('无法连接 record 记录服务器');
@@ -104,8 +393,8 @@
             const targetIp = recordData.tf;
 
             if (!targetIp) throw new Error('未发现有效的目标 IP (tf)');
+            globalTargetIp = targetIp; // 保存到全局变量
 
-            // 第三步：获取列表
             statusElement.innerText = "正在读取文件列表...";
             const API_URL = `http://${targetIp}/list`;
             const response = await fetch(API_URL);
@@ -116,25 +405,86 @@
                 item.name.startsWith('history_') && item.type === 'file'
             );
 
-            statusElement.innerText = historyFiles.length > 0 ? "" : "未发现匹配的历史文件。";
+            // ================= 新增：分组与排序逻辑 ================= //
+
+            // 1. 将文件按比赛组 ID（文件名的前8位字符）分组
+            const groups = {};
+            historyFiles.forEach(file => {
+                const match = file.name.match(/history_([A-Za-z0-9]{8})_/);
+                const groupId = match ? match[1] : 'unknown';
+
+                if (!groups[groupId]) {
+                    groups[groupId] = {
+                        id: groupId,
+                        files: [],
+                        latestTime: 0
+                    };
+                }
+                groups[groupId].files.push(file);
+                // 记录该组最新文件的时间，用于组与组之间的排序
+                if (file.time > groups[groupId].latestTime) {
+                    groups[groupId].latestTime = file.time;
+                }
+            });
+
+            // 2. 将分组转换为数组，并按最新时间倒序排列
+            const sortedGroups = Object.values(groups).sort((a, b) => b.latestTime - a.latestTime);
+
+            statusElement.innerText = historyFiles.length > 0 ? `共找到 ${historyFiles.length} 个记录` : "未发现匹配的历史文件。";
             listElement.innerHTML = '';
 
-            historyFiles.forEach(file => {
-                const li = document.createElement('li');
-                li.className = 'file-item';
+            let firstFileLoaded = false;
 
-                // 系统返回的修改时间 (Unix Timestamp)
-                const systemDate = new Date(file.time * 1000).toLocaleString();
+            // 3. 渲染分组和文件
+            sortedGroups.forEach(group => {
+                // 组内文件按时间倒序排列
+                group.files.sort((a, b) => b.time - a.time);
 
-                // 从文件名 ID 反推的时间
-                const idDate = parseTimeFromID(file.name);
+                // 创建分组容器
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'group-container';
 
-                li.innerHTML = `
-                        <strong>${file.name}</strong>
-                        <div class="file-info">最后修改时间: ${systemDate}</div>
-                        <div class="file-info id-time">ID 反推时间: ${idDate || '无法解析'}</div>
-                    `;
-                listElement.appendChild(li);
+                // 获取这组比赛的日期（取组内最新的文件反推时间即可）
+                const sampleIdDate = parseTimeFromID(group.files[0].name) || '未知时间';
+                const dateOnly = sampleIdDate.split(' ')[0]; // 只取日期部分
+
+                // 创建分组 Header
+                const groupHeader = document.createElement('div');
+                groupHeader.className = 'group-header';
+                groupHeader.innerHTML = `<span>比赛组: ${group.id}</span><span>${dateOnly}</span>`;
+                groupDiv.appendChild(groupHeader);
+
+                // 创建包含该组文件的 ul 列表
+                const ul = document.createElement('ul');
+                ul.className = 'file-list';
+
+                group.files.forEach((file) => {
+                    const li = document.createElement('li');
+                    li.className = 'file-item';
+
+                    // 绑定点击事件，加载内容
+                    li.onclick = () => loadFileContent(file.name, li);
+
+                    const systemDate = new Date(file.time * 1000).toLocaleString();
+                    const idDate = parseTimeFromID(file.name);
+
+                    // 根据要求，修改显示顺序：顶部显示反推时间，中间最后修改时间，底部文件名
+                    li.innerHTML = `
+                            <strong style="display:block; margin-bottom:4px; font-size:15px; color:#0f172a;">${idDate || '无法解析'}</strong>
+                            <div class="file-info">最后修改时间: ${systemDate}</div>
+                            <div class="file-info id-time">${file.name}</div>
+                        `;
+                    ul.appendChild(li);
+
+                    // 默认自动加载并展开所有的文件中的第一个文件内容
+                    if (!firstFileLoaded) {
+                        loadFileContent(file.name, li);
+                        firstFileLoaded = true;
+                    }
+                });
+
+                groupDiv.appendChild(ul);
+                listElement.appendChild(groupDiv);
             });
 
         } catch (error) {
