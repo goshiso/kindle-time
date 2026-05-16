@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>麻将对局数据中心</title>
+    <style>
+        /* 引入自定义明朝体 */
+        @font-face {
+            font-family: 'NewClear-mincho';
+            src: url('https://goshiso.github.io/kindle-time/NewClear-mincho.ttf');
+        }
+
+        body {
+            font-family: 'NewClear-mincho', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            color: #333;
+            background: #f1f5f9;
+        }
+
+        /* 侧边栏通用样式 (第一栏 and 第二栏) */
+        .sidebar {
+            width: 280px;
+            background: #f8fafc;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            background: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            z-index: 10;
+        }
+
+        .sidebar-header h2 {
+            margin: 0 0 5px 0;
+            font-size: 16px;
+            color: #1e293b;
+        }
+
+        .status-text {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .file-list-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+        }
+
+        /* 分组样式 */
+        .group-container {
+            margin-bottom: 15px;
+        }
+
+        .group-header {
+            font-size: 12px;
+            font-weight: bold;
+            color: #475569;
+            background: #e2e8f0;
+            padding: 6px 10px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .file-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .file-item {
+            background: #ffffff;
+            margin-bottom: 8px;
+            padding: 10px 12px;
+            border-radius: 6px;
+            border-left: 4px solid #94a3b8;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .file-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .file-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+        }
+
+        .file-item.active {
+            background: #eef2ff;
+            border-left-color: #3b82f6;
+            box-shadow: 0 0 0 1px #3b82f6 inset;
+        }
+
+        .file-info {
+            font-size: 0.85em;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .id-time {
+            color: #059669;
+            font-weight: 500;
+        }
+
+        /* 第三栏：主内容区 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            min-width: 400px;
+        }
+
+        .main-header {
+            padding: 15px 30px;
+            border-bottom: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+
+        .main-header h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #0f172a;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 20px 30px;
+            overflow-y: auto;
+        }
+
+        .error {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        .empty-state {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #94a3b8;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        /* ==================================
+           Rank 表格专属样式 (顺位点)
+           ================================== */
+        .total-table {
+            width: 100%;
+            border-collapse: separate; /* 核心修改：改为 separate 彻底解决切圆角引起的白色像素漏光 Bug */
+            border-spacing: 0;         /* 单元格间距设为 0 */
+            text-align: center;
+            background: #fff;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #94a3b8; /* 统一的外部边框颜色 */
+        }
+        .total-table th, .total-table td {
+            border-bottom: 1px solid #94a3b8; /* 统一的内部底边框 */
+            border-right: 1px solid #94a3b8;  /* 统一的内部右边框 */
+            padding: 12px 8px;
+        }
+        /* 去除最右列和最下行的多余内部边框，防止与外部大框重叠变粗 */
+        .total-table th:last-child, .total-table td:last-child { border-right: none; }
+        .total-table tr:last-child td { border-bottom: none; }
+
+        .total-table th { background: #eef6fc; color: #1e293b; font-weight: bold; font-size: 14px; }
+        .total-row-index { width: 40px; background: #f8fafc; color: #475569; font-weight: bold; }
+        .total-table tr:nth-child(even) td:not(.total-row-index) { background: #f1f5f9; }
+        .raw-score { display: block; font-size: 12px; color: #64748b; margin-bottom: 4px; }
+        .converted-point { display: block; font-weight: 900; font-size: 16px; }
+        .plus { color: #166534; }
+        .minus { color: #991b1b; }
+        .total-footer-row td { background: #fff5cc !important; color: #000; }
+        .footer-cell-content { display: flex; flex-direction: column; align-items: center; }
+        .total-rank-text { font-size: 13px; font-weight: bold; color: #475569; margin-top: 6px; }
+
+        /* ==================================
+           History Grid 专属样式 (历史记录)
+           ================================== */
+        .hist-grid {
+            display: grid;
+            width: 100%;
+            text-align: center;
+            font-size: 14px;
+            border-top: 1px solid #94a3b8;
+            border-left: 1px solid #94a3b8;
+            box-sizing: border-box;
+            background: #fff;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .h-head { background: #eef6fc; color: #1e293b; font-weight: bold; padding: 10px 5px; border-bottom: 1px solid #94a3b8; border-right: 1px solid #94a3b8; display: flex; align-items: center; justify-content: center; }
+        .h-cell { padding: 8px 5px; border-bottom: 1px solid #94a3b8; border-right: 1px solid #94a3b8; display: flex; align-items: center; justify-content: center; background: #ffffff; color: #333; }
+        .h-wind { color: #475569; background: #f8fafc; }
+        .h-row-alt { background: #f1f5f9; }
+        .diff-pos { color: #166534; }
+        .diff-neg { color: #991b1b; }
+
+        pre {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h2>顺位点记录 (Rank)</h2>
+        <div id="statusRank" class="status-text">初始化...</div>
+    </div>
+    <div id="rankFileList" class="file-list-container"></div>
+</div>
+
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h2>对局历史 (History)</h2>
+        <div id="statusHistory" class="status-text">初始化...</div>
+    </div>
+    <div id="historyFileList" class="file-list-container"></div>
+</div>
+
+<div class="main-content">
+    <div class="main-header">
+        <h2 id="contentTitle">未选择文件</h2>
+    </div>
+    <div id="fileContent" class="content-area">
+        <div class="empty-state">请在左侧选择一个文件查看详细记录</div>
+    </div>
+</div>
+
+<script>
+    const CONFIG_URL = 'https://goshiso.github.io/kindle-time/text';
+    let globalTargetIp = '';
+    let isFirstFileLoaded = false;
+
+    // ================= 辅助函数 =================
+
+    function parseTimeFromID(filename) {
+        try {
+            const match = filename.match(/history_([A-Z0-9]{4})[A-Z0-9]{2}[a-z]{2}_(\d{2})(\d{2})/);
+            if (!match) return null;
+            const datePartId = match[1];
+            const hh = match[2];
+            const mm = match[3];
+            const from32Hex = (str) => parseInt(str, 32);
+            const year  = 2000 + from32Hex(datePartId[0]);
+            const month = from32Hex(datePartId[1]) - 1;
+            const day   = from32Hex(datePartId[2]);
+            return `${year}/${(month+1).toString().padStart(2,'0')}/${day.toString().padStart(2,'0')} ${hh}:${mm}`;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    // ================= 核心内容渲染逻辑 =================
+
+    async function loadFileContent(filename, fileType, listItemElement) {
+        document.querySelectorAll('.file-item').forEach(el => el.classList.remove('active'));
+        listItemElement.classList.add('active');
+
+        const titleEl = document.getElementById('contentTitle');
+        const contentEl = document.getElementById('fileContent');
+        titleEl.innerText = filename;
+        contentEl.innerHTML = '<div class="empty-state">正在加载数据...</div>';
+
+        try {
+            if (!globalTargetIp) throw new Error("目标服务器 IP 未就绪");
+            const url = `http://${globalTargetIp}/${filename}`;
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                contentEl.innerHTML = `<div class="empty-state">文件获取失败 或 数据为空</div>`;
+                return;
+            }
+
+            const text = await response.text();
+            const lines = text.trim().split('\n').filter(l => l.trim() !== '');
+
+            if (lines.length === 0) {
+                contentEl.innerHTML = '<div class="empty-state">文件内容为空</div>';
+                return;
+            }
+
+            let records = [];
+            let isJsonFormat = true;
+            for (let line of lines) {
+                try { records.push(JSON.parse(line)); }
+                catch(e) { isJsonFormat = false; break; }
+            }
+
+            if (!isJsonFormat || records.length === 0 || !records[0].players) {
+                contentEl.innerHTML = `<pre>${text}</pre>`;
+                return;
+            }
+
+            if (fileType === 'rank') {
+                renderRankView(records, contentEl);
+            } else if (fileType === 'history') {
+                renderHistoryView(records, contentEl);
+            }
+
+        } catch (error) {
+            console.error('获取文件内容失败:', error);
+            contentEl.innerHTML = `<div class="empty-state error">读取失败: ${error.message}</div>`;
+        }
+    }
+
+    function renderRankView(allMatches, container) {
+        const playerNames = allMatches[0].players.map(p => p.name);
+        let html = `<table class="total-table"><thead><tr><th class="total-row-index">#</th>`;
+        playerNames.forEach(name => { html += `<th>${name}</th>`; });
+        html += `</tr></thead><tbody>`;
+
+        let totalStats = [0, 0, 0, 0];
+
+        allMatches.forEach((match, rowIndex) => {
+            html += `<tr><td class="total-row-index">${rowIndex + 1}</td>`;
+            match.players.forEach((p, pIdx) => {
+                const rp = p.rankPoint || 0;
+                const rs = p.rawScore || p.score || 0;
+                const c = rp > 0 ? 'plus' : (rp < 0 ? 'minus' : '');
+                const sign = rp > 0 ? '+' : '';
+                html += `<td>
+                            <span class="raw-score">${rs}</span>
+                            <span class="converted-point ${c}">${sign}${rp.toFixed(1)}</span>
+                         </td>`;
+                totalStats[pIdx] += rp;
+            });
+            html += `</tr>`;
+        });
+
+        let finalRankData = totalStats.map((val, idx) => ({ index: idx, total: val }));
+        let sortedFinal = [...finalRankData].sort((a, b) => b.total - a.total);
+        let ranks = new Array(4);
+        sortedFinal.forEach((item, i) => { ranks[item.index] = i + 1; });
+
+        html += `<tr class="total-footer-row"><td class="total-row-index" style="font-size:12px">±</td>`;
+        for (let i = 0; i < 4; i++) {
+            let totalVal = totalStats[i];
+            let c = totalVal > 0 ? 'plus' : (totalVal < 0 ? 'minus' : '');
+            let sign = totalVal < 0 ? '-' : '';
+            let displayVal = Math.abs(totalVal).toFixed(1);
+            let rank = ranks[i];
+            html += `<td>
+            <div class="footer-cell-content">
+                <span class="converted-point ${c}">〔${sign}${displayVal}〕</span>
+                <span class="total-rank-text">${rank}位</span>
+            </div>
+        </td>`;
+        }
+        html += `</tr></tbody></table>`;
+        container.innerHTML = html;
+    }
+
+    // 这里以下全部没有动过
+
+    function renderHistoryView(records, container) {
+        const playerNames = records[0].players.map(p => p.name);
+        let html = `<div class='hist-grid' style='grid-template-columns: 80px 80px repeat(${playerNames.length}, 1fr);'>`;
+
+        html += `<div class='h-head'></div><div class='h-head'></div>`;
+        playerNames.forEach(name => { html += `<div class='h-head'>${name}</div>`; });
+
+        html += `<div class='h-cell h-wind' style="font-size:12px">起始</div><div class='h-cell h-wind'>--</div>`;
+        playerNames.forEach(() => { html += `<div class='h-cell' style="color:#64748b; font-weight:bold;">25000</div>`; });
+
+        records.forEach((record, i) => {
+            let rowClass = (i % 2 === 0) ? '' : 'h-row-alt';
+            let typeText = record.type || '结算';
+            let windText = `${record.wind || ''}${record.honba !== undefined ? record.honba + '本场' : ''}`;
+
+            html += `<div class='h-cell h-wind ${rowClass}' style="font-size:12px">${typeText}</div>
+                     <div class='h-cell h-wind ${rowClass}' style="font-size:12px">${windText}</div>`;
+
+            record.players.forEach(p => {
+                let prevScore = (i === 0) ? 25000 : records[i-1].players.find(pp => pp.name === p.name).score;
+                let diff = p.score - prevScore;
+                let diffText = "--";
+                let diffClass = "";
+                if (diff !== 0) {
+                    diffText = `${diff > 0 ? '+' : ''}${diff}`;
+                    diffClass = diff > 0 ? 'diff-pos' : 'diff-neg';
+                }
+                html += `<div class='h-cell ${rowClass} ${diffClass}' style="font-weight:bold; font-size:15px;">${diffText}</div>`;
+            });
+        });
+
+        let lastRecord = records[records.length - 1];
+        html += `<div class='h-cell h-wind' style="grid-column: span 2; font-weight:bold; background:#fff5cc; color:#000;">合計</div>`;
+        lastRecord.players.forEach(p => {
+            let negStyle = p.score < 0 ? 'color: #ef4444;' : '';
+            html += `<div class='h-cell' style="font-weight:900; font-size:16px; background:#fff5cc; color:#000; ${negStyle}">${p.score}</div>`;
+        });
+        html += `</div>`;
+        container.innerHTML = html;
+    }
+
+    function buildRankList(rankFiles) {
+        const listEl = document.getElementById('rankFileList');
+        const statusEl = document.getElementById('statusRank');
+
+        if (rankFiles.length === 0) {
+            statusEl.innerText = "无顺位点数据";
+            return;
+        }
+        statusEl.innerText = `共 ${rankFiles.length} 个记录`;
+
+        const groups = {};
+        rankFiles.forEach(file => {
+            const dateObj = new Date(file.time * 1000);
+            const dateStr = dateObj.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+            if (!groups[dateStr]) groups[dateStr] = { date: dateStr, files: [], latestTime: 0 };
+            groups[dateStr].files.push(file);
+            if (file.time > groups[dateStr].latestTime) groups[dateStr].latestTime = file.time;
+        });
+
+        const sortedGroups = Object.values(groups).sort((a, b) => b.latestTime - a.latestTime);
+
+        sortedGroups.forEach(group => {
+            group.files.sort((a, b) => b.time - a.time);
+            const groupDiv = document.createElement('div');
+            groupDiv.className = 'group-container';
+            groupDiv.innerHTML = `<div class="group-header"><span>${group.date}</span></div>`;
+            const ul = document.createElement('ul');
+            ul.className = 'file-list';
+
+            group.files.forEach(file => {
+                const li = document.createElement('li');
+                li.className = 'file-item';
+                li.onclick = () => loadFileContent(file.name, 'rank', li);
+                const sysTime = new Date(file.time * 1000).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+                li.innerHTML = `<strong style="display:block; margin-bottom:4px;">${file.name}</strong>
+                                <div class="file-info id-time">${sysTime}</div>`;
+                ul.appendChild(li);
+
+                if (!isFirstFileLoaded) { loadFileContent(file.name, 'rank', li); isFirstFileLoaded = true; }
+            });
+            groupDiv.appendChild(ul);
+            listEl.appendChild(groupDiv);
+        });
+    }
+
+    function buildHistoryList(historyFiles) {
+        const listEl = document.getElementById('historyFileList');
+        const statusEl = document.getElementById('statusHistory');
+
+        if (historyFiles.length === 0) {
+            statusEl.innerText = "无历史数据";
+            return;
+        }
+        statusEl.innerText = `共 ${historyFiles.length} 个记录`;
+
+        const groups = {};
+        historyFiles.forEach(file => {
+            const match = file.name.match(/history_([A-Za-z0-9]{8})_/);
+            const groupId = match ? match[1] : 'unknown';
+            if (!groups[groupId]) groups[groupId] = { id: groupId, files: [], latestTime: 0 };
+            groups[groupId].files.push(file);
+            if (file.time > groups[groupId].latestTime) groups[groupId].latestTime = file.time;
+        });
+
+        const sortedGroups = Object.values(groups).sort((a, b) => b.latestTime - a.latestTime);
+
+        sortedGroups.forEach(group => {
+            group.files.sort((a, b) => b.time - a.time);
+            const sampleIdDate = parseTimeFromID(group.files[0].name) || '未知时间';
+            const dateOnly = sampleIdDate.split(' ')[0];
+
+            const groupDiv = document.createElement('div');
+            groupDiv.className = 'group-container';
+            groupDiv.innerHTML = `<div class="group-header"><span>组: ${group.id}</span><span>${dateOnly}</span></div>`;
+            const ul = document.createElement('ul');
+            ul.className = 'file-list';
+
+            group.files.forEach(file => {
+                const li = document.createElement('li');
+                li.className = 'file-item';
+                li.onclick = () => loadFileContent(file.name, 'history', li);
+                const idDate = parseTimeFromID(file.name) || file.name;
+                li.innerHTML = `<strong style="display:block;">${idDate}</strong>`;
+                ul.appendChild(li);
+
+                if (!isFirstFileLoaded) { loadFileContent(file.name, 'history', li); isFirstFileLoaded = true; }
+            });
+            groupDiv.appendChild(ul);
+            listEl.appendChild(groupDiv);
+        });
+    }
+
+    async function initializeData() {
+        const statusRank = document.getElementById('statusRank');
+        const statusHistory = document.getElementById('statusHistory');
+
+        try {
+            statusRank.innerText = statusHistory.innerText = "获取服务器...";
+            const res1 = await fetch(CONFIG_URL);
+            if (!res1.ok) throw new Error('无法获取中转配置');
+            const relayIp = (await res1.text()).trim();
+
+            const res2 = await fetch(`http://${relayIp}/record`);
+            if (!res2.ok) throw new Error('无法连接 record 服务器');
+            const recordData = await res2.json();
+            globalTargetIp = recordData.tf;
+
+            if (!globalTargetIp) throw new Error('未发现目标 IP');
+
+            statusRank.innerText = statusHistory.innerText = "读取文件列表...";
+            const response = await fetch(`http://${globalTargetIp}/list`);
+            if (!response.ok) throw new Error(`列表获取失败: ${response.status}`);
+
+            const data = await response.json();
+
+            const rankFiles = data.filter(i => i.name.startsWith('rank_') && i.type === 'file');
+            const historyFiles = data.filter(i => i.name.startsWith('history_') && i.type === 'file');
+
+            buildRankList(rankFiles);
+            buildHistoryList(historyFiles);
+
+        } catch (error) {
+            console.error('初始化失败:', error);
+            statusRank.innerHTML = statusHistory.innerHTML = `<span style="color:#ef4444">连接错误</span>`;
+            document.getElementById('fileContent').innerHTML = `<div class="empty-state error">初始化失败: ${error.message}</div>`;
+        }
+    }
+
+    initializeData();
+</script>
+</body>
+</html>
