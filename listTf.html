@@ -135,11 +135,7 @@
             const ipRes = await fetch('https://goshiso.github.io/kindle-time/text');
             const centerIp = (await ipRes.text()).trim();
 
-            status.innerText = `正在连接中心服务器 (${centerIp})...`;
-            const recordRes = await fetch(`http://${centerIp}/record`);
-            const recordData = await recordRes.json();
-
-            tfIp = recordData.tf;
+            tfIp = centerIp;
             if (!tfIp) throw new Error("无法从 record 接口获取 TF IP");
 
             await refreshList();
