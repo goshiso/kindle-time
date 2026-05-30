@@ -514,40 +514,40 @@
     }
 
     async function initializeData() {
-        const statusRank = document.getElementById('statusRank');
-        const statusHistory = document.getElementById('statusHistory');
+        const statusRank = document.getElementById('statusRank');
+        const statusHistory = document.getElementById('statusHistory');
 
-        try {
-            statusRank.innerText = statusHistory.innerText = "获取服务器...";
-            const res1 = await fetch(CONFIG_URL);
-            if (!res1.ok) throw new Error('无法获取中转配置');
-            const relayIp = (await res1.text()).trim();
+        try {
+            statusRank.innerText = statusHistory.innerText = "获取文件服务器...";
+            
+            // 1. 直接从 Github 获取文件服务器 (TF) 的 IP
+            const res1 = await fetch(CONFIG_URL);
+            if (!res1.ok) throw new Error('无法获取文件服务器 IP');
+            globalTargetIp = (await res1.text()).trim();
 
-            const res2 = await fetch(`http://${relayIp}/record`);
-            if (!res2.ok) throw new Error('无法连接 record 服务器');
-            const recordData = await res2.json();
-            globalTargetIp = recordData.tf;
+            if (!globalTargetIp) throw new Error('未发现目标 IP');
 
-            if (!globalTargetIp) throw new Error('未发现目标 IP');
+            // 2. 直接使用获取到的 IP 请求文件列表
+            statusRank.innerText = statusHistory.innerText = "读取文件列表...";
+            const response = await fetch(`http://${globalTargetIp}/list`);
+            if (!response.ok) throw new Error(`列表获取失败: ${response.status}`);
 
-            statusRank.innerText = statusHistory.innerText = "读取文件列表...";
-            const response = await fetch(`http://${globalTargetIp}/list`);
-            if (!response.ok) throw new Error(`列表获取失败: ${response.status}`);
+            const data = await response.json();
 
-            const data = await response.json();
+            // 过滤文件
+            const rankFiles = data.filter(i => i.name.startsWith('rank_') && i.type === 'file');
+            const historyFiles = data.filter(i => i.name.startsWith('history_') && i.type === 'file');
 
-            const rankFiles = data.filter(i => i.name.startsWith('rank_') && i.type === 'file');
-            const historyFiles = data.filter(i => i.name.startsWith('history_') && i.type === 'file');
+            // 构建侧边栏列表
+            buildRankList(rankFiles);
+            buildHistoryList(historyFiles);
 
-            buildRankList(rankFiles);
-            buildHistoryList(historyFiles);
-
-        } catch (error) {
-            console.error('初始化失败:', error);
-            statusRank.innerHTML = statusHistory.innerHTML = `<span style="color:#ef4444">连接错误</span>`;
-            document.getElementById('fileContent').innerHTML = `<div class="empty-state error">初始化失败: ${error.message}</div>`;
-        }
-    }
+        } catch (error) {
+            console.error('初始化失败:', error);
+            statusRank.innerHTML = statusHistory.innerHTML = `<span style="color:#ef4444">连接错误</span>`;
+            document.getElementById('fileContent').innerHTML = `<div class="empty-state error">初始化失败: ${error.message}</div>`;
+        }
+    }
 
     initializeData();
 </script>
