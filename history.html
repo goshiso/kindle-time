@@ -22,7 +22,7 @@
             background: #f1f5f9;
         }
 
-        /* 侧边栏通用样式 (第一栏 and 第二栏) */
+        /* 侧边栏通用样式 */
         .sidebar {
             width: 280px;
             background: #f8fafc;
@@ -118,7 +118,7 @@
             font-weight: 500;
         }
 
-        /* 第三栏：主内容区 */
+        /* 主内容区 */
         .main-content {
             flex: 1;
             display: flex;
@@ -160,26 +160,23 @@
             text-align: center;
         }
 
-        /* ==================================
-           Rank 表格专属样式 (顺位点)
-           ================================== */
+        /* Rank 表格专属样式 */
         .total-table {
             width: 100%;
-            border-collapse: separate; /* 核心修改：改为 separate 彻底解决切圆角引起的白色像素漏光 Bug */
-            border-spacing: 0;         /* 单元格间距设为 0 */
+            border-collapse: separate;
+            border-spacing: 0;
             text-align: center;
             background: #fff;
             border-radius: 6px;
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border: 1px solid #94a3b8; /* 统一的外部边框颜色 */
+            border: 1px solid #94a3b8;
         }
         .total-table th, .total-table td {
-            border-bottom: 1px solid #94a3b8; /* 统一的内部底边框 */
-            border-right: 1px solid #94a3b8;  /* 统一的内部右边框 */
+            border-bottom: 1px solid #94a3b8;
+            border-right: 1px solid #94a3b8;
             padding: 12px 8px;
         }
-        /* 去除最右列和最下行的多余内部边框，防止与外部大框重叠变粗 */
         .total-table th:last-child, .total-table td:last-child { border-right: none; }
         .total-table tr:last-child td { border-bottom: none; }
 
@@ -194,9 +191,7 @@
         .footer-cell-content { display: flex; flex-direction: column; align-items: center; }
         .total-rank-text { font-size: 13px; font-weight: bold; color: #475569; margin-top: 6px; }
 
-        /* ==================================
-           History Grid 专属样式 (历史记录)
-           ================================== */
+        /* History Grid 专属样式 */
         .hist-grid {
             display: grid;
             width: 100%;
@@ -255,8 +250,11 @@
 </div>
 
 <script>
-    const CONFIG_URL = 'https://goshiso.github.io/kindle-time/text';
-    let globalTargetIp = '';
+    // 💡 核心修改点 1：配置你的 Java 服务器地址
+    // 如果 HTML 是放在 Java 服务器的 resources/static 里运行，留空 "" 即可
+    // 如果 HTML 是单独打开调试的，请填入类似于 "http://localhost:8080" 或你的局域网 IP
+    const SERVER_BASE_URL = ''; 
+    
     let isFirstFileLoaded = false;
 
     // ================= 辅助函数 =================
@@ -290,8 +288,8 @@
         contentEl.innerHTML = '<div class="empty-state">正在加载数据...</div>';
 
         try {
-            if (!globalTargetIp) throw new Error("目标服务器 IP 未就绪");
-            const url = `http://${globalTargetIp}/${filename}`;
+            // 💡 核心修改点 2：改用 Java 服务器的新接口获取特定文件内容
+            const url = `${SERVER_BASE_URL}/api/getFile?name=${filename}&type=${fileType}`;
             const response = await fetch(url);
 
             if (!response.ok) {
@@ -331,6 +329,8 @@
         }
     }
 
+    // ---------- 以下 UI 渲染函数完全未作改动，保留你原有的样式逻辑 ----------
+    
     function renderRankView(allMatches, container) {
         const playerNames = allMatches[0].players.map(p => p.name);
         let html = `<table class="total-table"><thead><tr><th class="total-row-index">#</th>`;
@@ -377,8 +377,6 @@
         html += `</tr></tbody></table>`;
         container.innerHTML = html;
     }
-
-    // 这里以下全部没有动过
 
     function renderHistoryView(records, container) {
         const playerNames = records[0].players.map(p => p.name);
@@ -514,40 +512,32 @@
     }
 
     async function initializeData() {
-        const statusRank = document.getElementById('statusRank');
-        const statusHistory = document.getElementById('statusHistory');
+        const statusRank = document.getElementById('statusRank');
+        const statusHistory = document.getElementById('statusHistory');
 
-        try {
-            statusRank.innerText = statusHistory.innerText = "获取文件服务器...";
-            
-            // 1. 直接从 Github 获取文件服务器 (TF) 的 IP
-            const res1 = await fetch(CONFIG_URL);
-            if (!res1.ok) throw new Error('无法获取文件服务器 IP');
-            globalTargetIp = (await res1.text()).trim();
+        try {
+            statusRank.innerText = statusHistory.innerText = "读取文件列表...";
+            
+            // 💡 核心修改点 3：抛弃复杂的 Github IP 获取，直接请求 Java 服务器的文件列表
+            const response = await fetch(`${SERVER_BASE_URL}/api/listFiles`);
+            if (!response.ok) throw new Error(`列表获取失败: ${response.status}`);
 
-            if (!globalTargetIp) throw new Error('未发现目标 IP');
+            const data = await response.json();
 
-            // 2. 直接使用获取到的 IP 请求文件列表
-            statusRank.innerText = statusHistory.innerText = "读取文件列表...";
-            const response = await fetch(`http://${globalTargetIp}/list`);
-            if (!response.ok) throw new Error(`列表获取失败: ${response.status}`);
+            // 过滤并分配给左右两栏
+            const rankFiles = data.filter(i => i.name.startsWith('rank_') && i.type === 'file');
+            const historyFiles = data.filter(i => i.name.startsWith('history_') && i.type === 'file');
 
-            const data = await response.json();
+            // 构建侧边栏列表
+            buildRankList(rankFiles);
+            buildHistoryList(historyFiles);
 
-            // 过滤文件
-            const rankFiles = data.filter(i => i.name.startsWith('rank_') && i.type === 'file');
-            const historyFiles = data.filter(i => i.name.startsWith('history_') && i.type === 'file');
-
-            // 构建侧边栏列表
-            buildRankList(rankFiles);
-            buildHistoryList(historyFiles);
-
-        } catch (error) {
-            console.error('初始化失败:', error);
-            statusRank.innerHTML = statusHistory.innerHTML = `<span style="color:#ef4444">连接错误</span>`;
-            document.getElementById('fileContent').innerHTML = `<div class="empty-state error">初始化失败: ${error.message}</div>`;
-        }
-    }
+        } catch (error) {
+            console.error('初始化失败:', error);
+            statusRank.innerHTML = statusHistory.innerHTML = `<span style="color:#ef4444">连接错误</span>`;
+            document.getElementById('fileContent').innerHTML = `<div class="empty-state error">初始化失败: ${error.message}</div>`;
+        }
+    }
 
     initializeData();
 </script>
