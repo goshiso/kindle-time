@@ -1,0 +1,32 @@
+{
+  "players": [
+    {
+      "mac": "28:84:85:91:BA:DC",
+      "nickname": "P1",
+      "is_vip": true,
+      "theme_color": "0xFFAA00"
+    },
+    {
+      "mac": "44:1B:F6:CB:6E:33",
+      "nickname": "P2",
+      "is_vip": false,
+      "theme_color": "0x00FF00"
+    },
+    {
+      "mac": "44:1B:F6:8F:07:33",
+      "nickname": "P3",
+      "is_vip": false,
+      "theme_color": "0x0000FF"
+    },
+    {
+      "mac": "44:1B:F6:95:3D:33",
+      "nickname": "P4",
+      "is_vip": false,
+      "theme_color": "0xFF0000"
+    }
+  ],
+  "global_config": {
+    "version": "1.0",
+    "bgm_enabled": true
+  }
+}
