@@ -25,6 +25,7 @@
     "corner_thick": 25,
     "offset_x": 180,
     "offset_y": 100,
-    "diff_y_offset": 40
+    "diff_y_offset": 40,
+    "sync_interval": 2000
   }
 }
