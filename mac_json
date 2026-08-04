@@ -2,31 +2,29 @@
   "players": [
     {
       "mac": "28:84:85:91:BA:DC",
-      "nickname": "P1",
-      "is_vip": true,
-      "theme_color": "0xFFAA00"
+      "desc": "座位0_默认兜底"
     },
     {
       "mac": "44:1B:F6:CB:6E:33",
-      "nickname": "P2",
-      "is_vip": false,
-      "theme_color": "0x00FF00"
+      "desc": "座位1"
     },
     {
       "mac": "44:1B:F6:8F:07:33",
-      "nickname": "P3",
-      "is_vip": false,
-      "theme_color": "0x0000FF"
+      "desc": "座位2"
     },
     {
       "mac": "44:1B:F6:95:3D:33",
-      "nickname": "P4",
-      "is_vip": false,
-      "theme_color": "0xFF0000"
+      "desc": "座位3"
     }
   ],
-  "global_config": {
-    "version": "1.0",
-    "bgm_enabled": true
+  "layout": {
+    "up_animal": 80,
+    "up_wind": -55,
+    "up_score": 15,
+    "corner_len": 80,
+    "corner_thick": 25,
+    "offset_x": 180,
+    "offset_y": 100,
+    "diff_y_offset": 40
   }
 }
