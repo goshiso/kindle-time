@@ -18,7 +18,7 @@
     }
   ],
   "layout": {
-    "rotation": 90, 
+    "rotation": 90,
     "up_animal": 80,
     "up_wind": -55,
     "up_score": 15,
